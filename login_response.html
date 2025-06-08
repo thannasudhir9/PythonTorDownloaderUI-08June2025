@@ -1,8 +1,66 @@
-{% extends "base.html" %}
-
-{% block title %}Torrent Downloader{% endblock %}
-
-{% block extra_css %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="IjljNmExZTJiNGE4YmQ3MTVhYjc5YWY2MDI2MTM3MTEwNGU5Zjc1ZDAi.aEWmMw.EmAGv73j2nXifwzJVk8z0VAt1mw">
+    <title>Torrent Downloader</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            padding-top: 56px;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 20px 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #f8f9fa;
+        }
+        .main-content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 56px);
+            padding-top: .5rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .nav-link {
+            font-weight: 500;
+            color: #333;
+        }
+        .nav-link.active {
+            color: #0d6efd;
+        }
+        .nav-link:hover {
+            color: #0a58ca;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+        .completed-torrent {
+            background-color: #e8f5e9 !important;
+        }
+        .completed-torrent:hover {
+            background-color: #d1e7dd !important;
+        }
+    </style>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
     <style>
         :root {
@@ -149,49 +207,13 @@
             border-bottom: 1px solid var(--bs-border-color);
         }
         .top-banner {
-            background-color: var(--top-banner-bg);
-            color: var(--top-banner-color);
-            padding: 0.5rem 1rem;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            position: sticky;
-            top: 0;
-            z-index: 1030;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            flex-wrap: wrap;
-        }
-        
-        .ip-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
             align-items: center;
-            font-size: 0.9rem;
+            padding: 0.75rem 1.25rem;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--bs-border-color);
         }
-        
-        .ip-info > div {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-        }
-        
-        @media (max-width: 992px) {
-            .ip-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-            
-            .ip-info > div {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-        
         .theme-toggle-btn {
             font-size: 1.25rem;
             cursor: pointer;
@@ -327,36 +349,59 @@
             max-width: 300px; /* Adjust as needed, or use a percentage */
         }
     </style>
-{% endblock %}
 
-{% block content %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Torrent Downloader</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/">Admin</a>
+                        </li>
+                        
+                    
+                </ul>
+                <ul class="navbar-nav">
+                    
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>
+                                <span class="d-none d-sm-inline">admin</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key me-2"></i>Change Password</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    
 <div class="vpn-warning-banner">
     ⚠️ Educational Purposes Only !! Download only when connected to VPN to avoid risk! ⚠️
 </div>
 <div class="top-banner">
-    <div class="ip-info">
-        <div><strong>IPv4:</strong> <span id="clientIp">Loading...</span></div>
-        <div><strong>Location:</strong> <span id="ipLocation">Loading...</span></div>
-        <div><strong>ISP:</strong> <span id="ispName">Loading...</span></div>
-        <button id="refreshIpBtn" class="btn btn-sm theme-toggle-btn ms-2" title="Refresh IP Info">
-            <i class="bi bi-arrow-clockwise"></i>
-        </button>
-    </div>
+    <div>Server IP: <strong id="serverIpAddress">192.168.0.199</strong><span id="serverIpPort">:5000</span> <span id="ipLocation"></span> <button id="refreshIpBtn" class="btn btn-sm theme-toggle-btn" title="Refresh IP Info"><i class="bi bi-arrow-clockwise"></i></button></div>
     <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle theme">
         <!-- Icon will be set by JavaScript -->
     </button>
 </div>
-
-    <!--OST Widget code start openspeedtest.com-->
-    <div style="text-align:right; max-width: 500px; margin: 0 auto;">
-        <div style="min-height: 120px;">
-            <div style="width:100%;height:0;padding-bottom:60%;position:relative;">
-                <iframe style="border:none;position:absolute;top:0;left:0;width:100%;height:100%;min-height:120px;border:none;overflow:hidden !important;" src="//openspeedtest.com/speedtest"></iframe>
-            </div>
-        </div>
-    </div>
-    <!-- OST Widget code end openspeedtest.com -->
-
     <div class="container mt-5">
         <div class="card mb-4">
             <div class="card-body p-3">
@@ -369,15 +414,18 @@
                         </div>
                     </div>
                     <div class="btn-group" role="group">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="runSpeedTest()" id="speedTestBtn">
+                            <i class="bi bi-speedometer2 me-1"></i> Test Speed
+                        </button>
                         <button class="btn btn-outline-primary btn-sm" onclick="showChangePathDialog()">
-                            <i class="bi bi-pencil-square me-1"></i> Change Path
+                            <i class="bi bi-pencil-square me-1"></i> Change
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+        <h1 class="mb-4">Torrent Downloader</h1>
         
-
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">Add New Torrent</h5>
@@ -398,7 +446,7 @@
                     <div class="col-md-4">
                         <label for="downloadLimit" class="form-label">Download Speed Limit (KB/s)</label>
                         <select class="form-select" id="downloadLimit">
-                            <option value="0" selected>Unlimited</option>
+                            <option value="0">Unlimited</option>
                             <option value="25">25 KB/s</option>
                             <option value="50">50 KB/s</option>
                             <option value="100">100 KB/s</option>
@@ -426,10 +474,10 @@
                         <select class="form-select" id="maxDownloads">
                             <option value="1">1</option>
                             <option value="2">2</option>
-                            <option value="3">3</option>
+                            <option value="3" selected>3</option>
                             <option value="5">5</option>
                             <option value="10">10</option>
-                            <option value="25" selected>25</option>
+                            <option value="25">25</option>
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select>
@@ -477,7 +525,7 @@
                     </div>
                 </div>
                 <div id="currentSettingsDisplay" class="current-settings-display mb-3 p-2 rounded small">
-                    <strong>Current Active Limits are :</strong> 
+                    <strong>Current Limits:</strong> 
                     DL: <span id="currentDlLimit">---</span> KB/s | 
                     UL: <span id="currentUlLimit">---</span> KB/s | 
                     Max Parallel: <span id="currentMaxDownloads">---</span>
@@ -743,52 +791,10 @@
             updateThemeIcon();
         }
 
-        // Function to fetch and display IP details
-        async function fetchAndDisplayIpDetails() {
-            try {
-                // First get IPv4 address using a different endpoint
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                if (!ipResponse.ok) {
-                    throw new Error('Failed to fetch IPv4 address');
-                }
-                const ipData = await ipResponse.json();
-                const ipv4 = ipData.ip;
-                
-                // Then get location and ISP details
-                const response = await fetch(`https://ipapi.co/${ipv4}/json/`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch IP details');
-                }
-                const data = await response.json();
-                
-                // Log the full response for debugging
-                console.log('IP API Response:', data);
-                
-                // Update the UI with the IP information
-                document.getElementById('clientIp').textContent = ipv4 || 'N/A';
-                const city = data.city || '';
-                const country = data.country_name || data.country_code || 'Unknown';
-                document.getElementById('ipLocation').textContent = city ? `${city}, ${country}` : country;
-                document.getElementById('ispName').textContent = data.org || 'N/A';
-                
-            } catch (error) {
-                console.error('Error fetching IP info:', error);
-                document.getElementById('clientIp').textContent = 'Error loading IP';
-                document.getElementById('ipCountry').textContent = 'Error loading country';
-                document.getElementById('ispName').textContent = 'Error loading ISP';
-            }
-        }
-
-        // Add click handler for refresh button
-        document.getElementById('refreshIpBtn').addEventListener('click', fetchAndDisplayIpDetails);
-
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) {
                 document.documentElement.setAttribute('data-bs-theme', savedTheme);
-            
-            // Fetch IP details when the page loads
-            fetchAndDisplayIpDetails();
             } else {
                 // Default to light theme if nothing is saved
                 document.documentElement.setAttribute('data-bs-theme', 'light');
@@ -1083,8 +1089,7 @@
             fetch('/update_settings', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(settings)
             })
@@ -1113,8 +1118,7 @@
             fetch('/control_selected', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     torrents: selected,
@@ -1259,46 +1263,19 @@
         }
 
         function fetchAndDisplayCurrentSettings() {
-            fetch('/get_current_settings', {
-                headers: {
-                    'X-CSRFToken': getCSRFToken()
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => {
-                        console.error('Server error:', err);
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    console.error('Error in response:', data);
-                    showToast('Error loading settings: ' + (data.details || data.error), 'error');
-                    return;
-                }
-                
-                document.getElementById('currentDlLimit').textContent = data.download_limit > 0 ? data.download_limit : 'Unlimited';
-                document.getElementById('currentUlLimit').textContent = data.upload_limit > 0 ? data.upload_limit : 'Unlimited';
-                document.getElementById('currentMaxDownloads').textContent = data.max_downloads || 25;  // Default to 25 if not set
-                
-                // Also update the select elements to reflect current settings
-                if (document.getElementById('downloadLimit')) {
-                    document.getElementById('downloadLimit').value = data.download_limit || 0;
-                }
-                if (document.getElementById('uploadLimit')) {
-                    document.getElementById('uploadLimit').value = data.upload_limit || 0;
-                }
-                if (document.getElementById('maxDownloads')) {
-                    document.getElementById('maxDownloads').value = data.max_downloads || 25;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching current settings:', error);
-                showToast('Failed to load settings. Check console for details.', 'error');
-            });
+            fetch('/get_current_settings')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('currentDlLimit').textContent = data.download_limit > 0 ? data.download_limit : 'Unlimited';
+                    document.getElementById('currentUlLimit').textContent = data.upload_limit > 0 ? data.upload_limit : 'Unlimited';
+                    document.getElementById('currentMaxDownloads').textContent = data.max_downloads;
+                    
+                    // Also update the select elements to reflect current settings
+                    document.getElementById('downloadLimit').value = data.download_limit;
+                    document.getElementById('uploadLimit').value = data.upload_limit;
+                    document.getElementById('maxDownloads').value = data.max_downloads;
+                })
+                .catch(error => console.error('Error fetching current settings:', error));
         }
 
         // Download path functions
@@ -1310,27 +1287,23 @@
         }
 
         function fetchCurrentDownloadPath() {
-            fetch('/get_download_path', {
-                headers: {
-                    'X-CSRFToken': getCSRFToken()
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const pathElement = document.getElementById('currentDownloadPath');
-                    if (pathElement) {
-                        pathElement.textContent = data.download_path;
-                        pathElement.title = data.download_path; // Show full path on hover
+            fetch('/get_download_path')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const pathElement = document.getElementById('currentDownloadPath');
+                        if (pathElement) {
+                            pathElement.textContent = data.download_path;
+                            pathElement.title = data.download_path; // Show full path on hover
+                        }
+                    } else {
+                        showToast('Failed to load download path: ' + (data.error || 'Unknown error'), 'error');
                     }
-                } else {
-                    showToast('Failed to load download path: ' + (data.error || 'Unknown error'), 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching download path:', error);
-                showToast('Failed to load download path', 'error');
-            });
+                })
+                .catch(error => {
+                    console.error('Error fetching download path:', error);
+                    showToast('Failed to load download path', 'error');
+                });
         }
 
         function updateDownloadPath() {
@@ -1347,7 +1320,6 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
                 },
                 body: JSON.stringify({ path: newPath })
             })
@@ -1530,8 +1502,7 @@
             fetch('/set_no_upload', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
+                    'Content-Type': 'application/json'
                 }
             })
             .then(response => response.json())
@@ -1555,12 +1526,7 @@
         }
 
         function startAllTorrents() {
-            fetch('/start_all_torrents', { 
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRFToken()
-                }
-            })
+            fetch('/start_all_torrents', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     showToast(data.message || 'Attempted to start all torrents.');
@@ -1576,12 +1542,7 @@
             if (!confirm('Are you sure you want to stop and remove all torrents? This will clear the active list.')) {
                 return;
             }
-            fetch('/stop_all_torrents', { 
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRFToken()
-                }
-            })
+            fetch('/stop_all_torrents', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -1600,12 +1561,7 @@
         }
 
         function pauseAllTorrents() {
-            fetch('/pause_all_torrents', { 
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRFToken()
-                }
-            })
+            fetch('/pause_all_torrents', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     showToast(data.message || 'Attempted to pause all torrents.');
@@ -1620,16 +1576,8 @@
         function fetchAndDisplayAddedMagnets() {
             // First, get the list of added magnets
             Promise.all([
-                fetch('/get_added_magnets', {
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                }).then(res => res.json()),
-                fetch('/get_status', {
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                }).then(res => res.json())
+                fetch('/get_added_magnets').then(res => res.json()),
+                fetch('/get_status').then(res => res.json())
             ])
             .then(([magnetsData, statusData]) => {
                 const tbody = document.getElementById('addedMagnetsList');
@@ -1712,12 +1660,8 @@
                     </td>
                 </tr>`;
 
-            fetch('/get_completed_torrents', {
-                headers: {
-                    'X-CSRFToken': getCSRFToken()
-                }
-            })
-            .then(response => response.json())
+            fetch('/get_completed_torrents')
+                .then(response => response.json())
                 .then(data => {
                     tbody.innerHTML = ''; // Clear loading message
                     
@@ -1766,12 +1710,8 @@
                                 openBtn.onclick = (e) => {
                                     e.stopPropagation();
                                     // This will be handled by the backend
-                                    fetch(`/open_folder?path=${encodeURIComponent(torrent.save_path)}`, {
-                                        headers: {
-                                            'X-CSRFToken': getCSRFToken()
-                                        }
-                                    })
-                                    .catch(err => console.error('Error opening folder:', err));
+                                    fetch(`/open_folder?path=${encodeURIComponent(torrent.save_path)}`)
+                                        .catch(err => console.error('Error opening folder:', err));
                                 };
                                 actionsCell.appendChild(openBtn);
                             }
@@ -1821,11 +1761,6 @@
                 });
         }
 
-        // Function to get CSRF token from meta tag
-        function getCSRFToken() {
-            return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        }
-
         // Handle form submission
         document.getElementById('torrentForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1836,10 +1771,7 @@
             
             fetch('/add_torrent', {
                 method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': getCSRFToken()
-                }
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
@@ -1855,11 +1787,7 @@
         // Add control function
         function controlTorrent(torrentId, action) {
             fetch(`/control_torrent/${torrentId}/${action}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRFToken(),
-                    'Content-Type': 'application/json'
-                }
+                method: 'POST'
             })
             .then(response => response.json())
             .then(data => {
@@ -1895,4 +1823,81 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-{% endblock %}
+
+
+    <!-- Toast Notifications -->
+    <div class="toast-container">
+        
+            
+        
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Show toast notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function(toastEl) {
+                var toast = new bootstrap.Toast(toastEl, {autohide: true, delay: 5000});
+                toast.show();
+                return toast;
+            });
+        });
+
+        // Show toast message
+        function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                // Create toast container if it doesn't exist
+                const container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+            
+            const toastId = 'toast-' + Date.now();
+            const toastHTML = `
+                <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+            const toastEl = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastEl, {autohide: true, delay: 5000});
+            toast.show();
+            
+            // Remove toast from DOM after it's hidden
+            toastEl.addEventListener('hidden.bs.toast', function () {
+                toastEl.remove();
+            });
+        }
+        
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+</body>
+</html>

@@ -4,8 +4,22 @@ import os
 import sys
 import subprocess
 import logging
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from flask_login import LoginManager, current_user, login_required
+from flask_wtf.csrf import CSRFProtect, CSRFError
 from threading import Thread
+from datetime import datetime
+import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Import models and blueprints
+from models import db, User, TorrentFile, Download, SpeedTest
+from auth import auth_bp, create_admin_user
+from admin_views import admin_bp
+from speedtest_routes import speedtest_bp
 
 # Configure logging
 logging.basicConfig(
@@ -22,6 +36,36 @@ logger = logging.getLogger(__name__)
 
 # Create Flask app
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///torrent_downloader.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER', 'downloads')
+
+# Initialize database
+db.init_app(app)
+
+# Initialize CSRF protection
+csrf = CSRFProtect()
+csrf.init_app(app)
+
+# Enable CSRF protection for all routes by default
+app.config['WTF_CSRF_CHECK_DEFAULT'] = True
+app.config['WTF_CSRF_ENABLED'] = True
+
+# Set up login manager
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Register blueprints
+app.register_blueprint(auth_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(speedtest_bp, url_prefix='/speedtest')
+
 # Set log level for Flask to WARNING to reduce noise
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 import json
@@ -40,6 +84,10 @@ def get_local_ip():
     except:
         return "127.0.0.1"
 
+# Initialize libtorrent session
+download_session = lt.session()
+download_session.listen_on(6881, 6891)
+
 # Global variables to track downloads
 active_downloads = {}
 completed_torrents_info = [] # Store info of completed torrents (name, size, etc.)
@@ -48,10 +96,7 @@ added_magnets = [] # Store previously added magnet links
 
 # Default download directory (can be changed by user)
 DOWNLOAD_DIR = os.path.join(os.path.expanduser('~'), 'Downloads')
-
-# Initialize libtorrent session
-download_session = lt.session()
-download_session.listen_on(6881, 6891)
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 # Set default upload speed limit to 100 KB/s
 default_upload_limit_kb = 100
 download_session.upload_rate_limit = default_upload_limit_kb * 1024
@@ -59,8 +104,30 @@ print(f"Default upload rate limit set to: {default_upload_limit_kb} KB/s ({downl
 local_ip = get_local_ip() # Initial fetch
 
 @app.route('/')
+@login_required
 def index():
-    return render_template('index.html', ip_address=local_ip)
+    try:
+        # Check if user is authenticated
+        if current_user.is_authenticated:
+            # Get user's active downloads
+            user_downloads = Download.query.filter_by(user_id=current_user.id, status='downloading').order_by(Download.created_at.desc()).all()
+            completed_downloads = Download.query.filter_by(user_id=current_user.id, status='completed').order_by(Download.completed_at.desc()).limit(10).all()
+            
+            # Get recent speed tests
+            recent_speed_tests = SpeedTest.query.filter_by(user_id=current_user.id).order_by(SpeedTest.timestamp.desc()).limit(3).all()
+            
+            # CSRF token is automatically available in templates via {{ csrf_token() }}
+            return render_template('index.html', 
+                                ip_address=local_ip,
+                                active_downloads=user_downloads,
+                                completed_downloads=completed_downloads,
+                                recent_speed_tests=recent_speed_tests)
+        
+        # For non-authenticated users, show a welcome page or redirect to login
+        return redirect(url_for('auth.login'))
+    except Exception as e:
+        app.logger.error(f"Error in index route: {str(e)}", exc_info=True)
+        return str(e), 500
 
 def download_torrent(magnet_link_or_file_path, save_path="."):
     """Downloads a torrent and returns the handle"""
@@ -499,31 +566,93 @@ def get_ip_details():
 
 @app.route('/get_current_settings', methods=['GET'])
 def get_current_settings():
-    # Get current settings pack from the session
-    current_libtorrent_settings = download_session.get_settings()
-
-    # Fetch rate limits from settings
-    # In newer versions of libtorrent, settings are accessed directly as dictionary keys
-    dl_rate_val = current_libtorrent_settings.get('download_rate_limit', 0)
-    ul_rate_val = current_libtorrent_settings.get('upload_rate_limit', 0)
-
-    # Get max parallel downloads (active_downloads_limit)
-    max_parallel_downloads_val = current_libtorrent_settings.get('active_downloads_limit', 20)  # Default to 20 if not set
-
-    app.logger.debug(f"Current download_rate_limit from session: {dl_rate_val} bytes/s")
-    app.logger.debug(f"Current upload_rate_limit from session: {ul_rate_val} bytes/s")
-    app.logger.debug(f"Current active_downloads_limit from session: {max_parallel_downloads_val}")
-
-    # Convert rates to KB/s for display. If rate is <= 0 (i.e., 0 or -1 for unlimited), display as 0 KB/s.
-    download_limit_kb = (dl_rate_val // 1024) if dl_rate_val > 0 else 0
-    upload_limit_kb = (ul_rate_val // 1024) if ul_rate_val > 0 else 0
-    
-    # max_parallel_downloads_val is the direct integer value.
-    return jsonify({
-        'download_limit': download_limit_kb,
-        'upload_limit': upload_limit_kb,
-        'max_downloads': max_parallel_downloads_val
-    })
+    try:
+        app.logger.info("Entering get_current_settings")
+        
+        # Default values
+        default_download_limit = 0  # 0 means unlimited
+        default_upload_limit = 100 * 1024  # 100 KB/s in bytes
+        default_max_downloads = 25  # Max parallel downloads
+        
+        try:
+            # Get max downloads from session settings first
+            settings = download_session.get_settings()
+            app.logger.info(f"Session settings: {settings}")
+            
+            max_parallel_downloads_val = settings.get('active_downloads_limit', default_max_downloads)
+            app.logger.info(f"Max parallel downloads: {max_parallel_downloads_val}")
+            
+            # Initialize rate limit values
+            dl_rate_val = 0
+            ul_rate_val = 0
+            
+            try:
+                # Get download rate limit
+                dl_rate_val = download_session.download_rate_limit()
+                app.logger.info(f"Got download rate limit: {dl_rate_val}")
+                
+                # Apply default if needed
+                if dl_rate_val in (-1, 0):  # -1 or 0 means unlimited in libtorrent
+                    dl_rate_val = default_download_limit
+                    download_session.download_rate_limit = default_download_limit
+                    app.logger.info("Set default download limit")
+            except Exception as e:
+                app.logger.error(f"Error getting/setting download rate limit: {e}")
+                dl_rate_val = default_download_limit
+            
+            try:
+                # Get upload rate limit
+                ul_rate_val = download_session.upload_rate_limit()
+                app.logger.info(f"Got upload rate limit: {ul_rate_val}")
+                
+                # Apply default if needed
+                if ul_rate_val in (-1, 0):  # -1 or 0 means unlimited in libtorrent
+                    ul_rate_val = default_upload_limit
+                    download_session.upload_rate_limit = default_upload_limit
+                    app.logger.info("Set default upload limit")
+            except Exception as e:
+                app.logger.error(f"Error getting/setting upload rate limit: {e}")
+                ul_rate_val = default_upload_limit
+            
+            # Handle max parallel downloads
+            if max_parallel_downloads_val <= 0:
+                max_parallel_downloads_val = default_max_downloads
+                download_session.apply_settings({'active_downloads_limit': default_max_downloads})
+                app.logger.info("Set default max parallel downloads")
+            
+            # Log current settings
+            app.logger.info(f"Final values - DL: {dl_rate_val}, UL: {ul_rate_val}, Max: {max_parallel_downloads_val}")
+            
+            # Convert rates to KB/s for display (0 means unlimited)
+            try:
+                download_limit_kb = int(dl_rate_val) // 1024 if int(dl_rate_val) > 0 else 0
+                upload_limit_kb = int(ul_rate_val) // 1024 if int(ul_rate_val) > 0 else 0
+            except (TypeError, ValueError) as e:
+                app.logger.error(f"Error converting rate limits: {e}")
+                download_limit_kb = 0
+                upload_limit_kb = 0
+            
+            response = {
+                'download_limit': download_limit_kb,
+                'upload_limit': upload_limit_kb,
+                'max_downloads': max_parallel_downloads_val
+            }
+            app.logger.info(f"Returning response: {response}")
+            return jsonify(response)
+            
+        except Exception as inner_e:
+            app.logger.error(f"Inner error in get_current_settings: {str(inner_e)}", exc_info=True)
+            raise  # Re-raise to be caught by outer try-except
+            
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        app.logger.error(f"Outer error in get_current_settings: {str(e)}\n{error_details}")
+        return jsonify({
+            'error': 'Failed to retrieve settings',
+            'details': str(e),
+            'traceback': error_details
+        }), 500
 
 @app.route('/start_all_torrents', methods=['POST'])
 def start_all_torrents():
@@ -699,7 +828,18 @@ def set_download_path():
         logger.error(error_msg, exc_info=True)
         return jsonify({'success': False, 'error': error_msg}), 500
 
+def create_tables():
+    with app.app_context():
+        # Create all database tables
+        db.create_all()
+        # Create admin user if not exists
+        create_admin_user()
+        print("Database tables created successfully!")
+
 if __name__ == '__main__':
+    # Create database tables
+    create_tables()
+    
     # Ensure local_ip is updated before running, in case get_local_ip() behavior changes
     local_ip = get_local_ip()
     print(f"Serving on http://{local_ip}:5000")
