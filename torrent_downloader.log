@@ -137,3 +137,106 @@ did not match C++ signature:
 2025-06-08 14:14:14,146 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Received request for handle_id: 0
 2025-06-08 14:14:14,146 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Current active_downloads keys: ['8748623081392497140']
 2025-06-08 14:14:14,146 - torrentDownloaderUI - ERROR - [Backend] torrent_details: handle_id '0' not found in active_downloads.
+2025-06-08 14:15:06,402 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:16:46,827 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:16:46,828 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:16:46,830 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:16:46,850 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:16:49,128 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:16:53,797 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:16:53,797 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:16:53,797 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:16:53,797 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 14:16:53,799 - torrentDownloaderUI - DEBUG - Forcing recheck of existing files...
+2025-06-08 14:16:53,799 - torrentDownloaderUI - INFO - Successfully added magnet link, handle: <libtorrent.torrent_handle object at 0x0000023F850D6490>
+2025-06-08 14:16:53,799 - torrentDownloaderUI - DEBUG - Torrent handle is valid: <libtorrent.torrent_handle object at 0x0000023F850D6490>
+2025-06-08 14:16:53,799 - torrentDownloaderUI - INFO - Added new magnet link to history: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:16:53,800 - torrentDownloaderUI - INFO - Successfully added torrent with handle_id: 3968502891863406124
+2025-06-08 14:17:14,478 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Received request for handle_id: 0
+2025-06-08 14:17:14,479 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Current active_downloads keys: ['3968502891863406124']
+2025-06-08 14:17:14,479 - torrentDownloaderUI - WARNING - [Backend] torrent_details: handle_id '0' not found in active_downloads.
+2025-06-08 14:17:27,500 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Received request for handle_id: 0
+2025-06-08 14:17:27,500 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Current active_downloads keys: ['3968502891863406124']
+2025-06-08 14:17:27,500 - torrentDownloaderUI - WARNING - [Backend] torrent_details: handle_id '0' not found in active_downloads.
+2025-06-08 14:17:27,502 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Received request for handle_id: 0
+2025-06-08 14:17:27,503 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Current active_downloads keys: ['3968502891863406124']
+2025-06-08 14:17:27,503 - torrentDownloaderUI - WARNING - [Backend] torrent_details: handle_id '0' not found in active_downloads.
+2025-06-08 14:24:20,355 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:24:20,356 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:24:20,358 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:24:20,385 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:24:21,913 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:24:57,815 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:24:57,816 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:24:57,816 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:24:57,827 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:24:58,139 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:25:52,646 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:25:52,648 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:25:52,648 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:25:52,654 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:25:54,156 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:29:37,923 - torrentDownloaderUI - INFO - Torrent 'www.5MovieRulz.realty - Devika & Danny (2025) 1080p S01 EP (01-07) TRUE WEB-DL - AVC - [Tel + Tam + Hin + Mal + Kan]' (ID: 3968502891863406124) marked as completed and added to completed list.
+2025-06-08 14:29:55,650 - torrentDownloaderUI - INFO - Attempting to pause all active torrents.
+2025-06-08 14:29:55,651 - torrentDownloaderUI - INFO - Paused torrent:  (ID: 3968502891863406124)
+2025-06-08 14:29:55,651 - torrentDownloaderUI - INFO - Finished attempting to pause all torrents. Paused: 1
+2025-06-08 14:33:30,803 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:33:41,400 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:41:46,375 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:41:46,376 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:41:46,377 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:41:46,396 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:41:47,455 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:41:55,755 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:41:55,756 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:41:55,756 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:41:55,757 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 14:41:55,758 - torrentDownloaderUI - DEBUG - Forcing recheck of existing files...
+2025-06-08 14:41:55,758 - torrentDownloaderUI - INFO - Successfully added magnet link, handle: <libtorrent.torrent_handle object at 0x0000020F498CAC00>
+2025-06-08 14:41:55,758 - torrentDownloaderUI - DEBUG - Torrent handle is valid: <libtorrent.torrent_handle object at 0x0000020F498CAC00>
+2025-06-08 14:41:55,758 - torrentDownloaderUI - INFO - Added new magnet link to history: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:41:55,758 - torrentDownloaderUI - INFO - Successfully added torrent with handle_id: 408582282160098134
+2025-06-08 14:42:15,702 - torrentDownloaderUI - INFO - Torrent 'www.5MovieRulz.realty - Devika & Danny (2025) 1080p S01 EP (01-07) TRUE WEB-DL - AVC - [Tel + Tam + Hin + Mal + Kan]' (ID: 408582282160098134) marked as completed and added to completed list.
+2025-06-08 14:43:26,370 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:44:08,103 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:44:54,788 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:44:54,789 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:44:54,790 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:44:54,806 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:44:55,462 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:45:01,548 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:45:01,548 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:45:01,549 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:45:01,549 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 14:45:01,553 - torrentDownloaderUI - ERROR - Error in download_torrent: 'unknown name in torrent params: paused'
+Traceback (most recent call last):
+  File "d:\VSCode\PythonTorrentDownloader\torrentDownloaderUI.py", line 98, in download_torrent
+    handle = lt.add_magnet_uri(download_session, magnet_link_or_file_path, params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'unknown name in torrent params: paused'
+2025-06-08 14:45:01,554 - torrentDownloaderUI - ERROR - Failed to add torrent. Handle is None
+2025-06-08 14:46:33,189 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:48:06,366 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:48:06,367 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:48:06,367 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:48:06,381 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:48:07,260 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:48:07,260 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:48:07,260 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:48:07,268 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:48:07,460 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:48:07,605 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:48:09,792 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:48:09,794 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:48:09,794 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:48:09,801 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:48:10,088 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:48:13,464 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:48:13,465 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:48:13,465 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:48:13,467 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 14:48:13,469 - torrentDownloaderUI - DEBUG - Forcing recheck of existing files...
+2025-06-08 14:48:13,469 - torrentDownloaderUI - INFO - Successfully added magnet link, handle: <libtorrent.torrent_handle object at 0x000001AEF3EAEB20>
+2025-06-08 14:48:13,469 - torrentDownloaderUI - DEBUG - Torrent handle is valid: <libtorrent.torrent_handle object at 0x000001AEF3EAEB20>
+2025-06-08 14:48:13,469 - torrentDownloaderUI - INFO - Added new magnet link to history: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:48:13,469 - torrentDownloaderUI - INFO - Successfully added torrent with handle_id: -7654932622119688102

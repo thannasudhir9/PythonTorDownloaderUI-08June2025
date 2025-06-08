@@ -162,10 +162,17 @@ pip install -r requirements.txt
 python torrentDownloaderUI.py
 
 
+# TODO - prompts
+add speed test in top and show download speed and upload speed of the current internet connection
 
 add a postgres sql database, create user and store the information of magnet links , metadata , downloaded files etc specific to the user
 
 create an admin user who can monitor number of users and what users have downloaded
 
+Show Completed Downloads in Green / Light Green Color
+Hide Connected Peers and Files Section, only when clicked on current active torrent should be displayed
 
+# Commands
 taskkill /F /IM python.exe
+
+Date - June 8 2025

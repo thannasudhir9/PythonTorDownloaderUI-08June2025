@@ -1,6 +1,8 @@
 import libtorrent as lt
 import time
 import os
+import sys
+import subprocess
 import logging
 from flask import Flask, render_template, request, jsonify
 from threading import Thread
@@ -79,15 +81,16 @@ def download_torrent(magnet_link_or_file_path, save_path="."):
             if magnet_link_or_file_path.startswith("magnet:"):
                 app.logger.debug(f"Adding magnet link: {magnet_link_or_file_path[:60]}...")
                 
-
+                # Create add_torrent_params object
+                params = lt.add_torrent_params()
                 
-                # Parse magnet URI and create torrent params
+                # Parse magnet URI
                 params = lt.parse_magnet_uri(magnet_link_or_file_path)
                 params.save_path = save_path
                 params.storage_mode = lt.storage_mode_t.storage_mode_sparse
                 
                 # Set flags
-                params.flags = lt.torrent_flags.duplicate_is_error
+                params.flags |= lt.torrent_flags.duplicate_is_error
                 params.flags &= ~lt.torrent_flags.paused
                 params.flags &= ~lt.torrent_flags.auto_managed
                 
@@ -97,7 +100,7 @@ def download_torrent(magnet_link_or_file_path, save_path="."):
                 if not handle or not handle.is_valid():
                     app.logger.error("Failed to create valid handle from magnet link")
                     return None
-                    
+                
                 # Force a recheck to verify existing files
                 app.logger.debug("Forcing recheck of existing files...")
                 handle.force_recheck()
@@ -109,24 +112,22 @@ def download_torrent(magnet_link_or_file_path, save_path="."):
             elif os.path.exists(magnet_link_or_file_path) and magnet_link_or_file_path.endswith(".torrent"):
                 app.logger.debug(f"Adding .torrent file: {magnet_link_or_file_path}")
                 
-                # Create add_torrent_params
+                # Create add_torrent_params object
                 params = lt.add_torrent_params()
+                
+                # Set torrent info and parameters
                 params.ti = lt.torrent_info(magnet_link_or_file_path)
                 params.save_path = save_path
                 params.storage_mode = lt.storage_mode_t.storage_mode_sparse
-                params.duplicate_is_error = False
                 
-                # Enable features
+                # Set flags
+                params.flags |= lt.torrent_flags.duplicate_is_error
                 params.flags &= ~lt.torrent_flags.paused
                 params.flags &= ~lt.torrent_flags.auto_managed
                 
                 # Add the torrent to the session
                 handle = download_session.add_torrent(params)
                 
-                if not handle or not handle.is_valid():
-                    app.logger.error("Failed to create valid handle from .torrent file")
-                    return None
-                    
                 # Force a recheck to verify existing files
                 handle.force_recheck()
                 handle.resume()
@@ -138,8 +139,6 @@ def download_torrent(magnet_link_or_file_path, save_path="."):
                 return None
                 
             if handle and handle.is_valid():
-                # Set sequential download to false for better performance
-                handle.set_sequential_download(False)
                 app.logger.debug(f"Torrent handle is valid: {handle}")
                 return handle
                 
@@ -354,8 +353,12 @@ def torrent_details(handle_id):
     app.logger.debug(f"[Backend] torrent_details: Received request for handle_id: {handle_id}")
     app.logger.debug(f"[Backend] torrent_details: Current active_downloads keys: {list(active_downloads.keys())}")
     if handle_id not in active_downloads:
-        app.logger.error(f"[Backend] torrent_details: handle_id '{handle_id}' not found in active_downloads.")
-        return jsonify({'error': 'Torrent not found'})
+        app.logger.warning(f"[Backend] torrent_details: handle_id '{handle_id}' not found in active_downloads.")
+        return jsonify({
+            'error': 'Torrent not found or no longer active',
+            'handle_id': handle_id,
+            'active_handles': list(active_downloads.keys())
+        }), 404
 
     handle = active_downloads[handle_id]['handle']
     status = handle.status(0) # Pass 0 for default flags
@@ -619,6 +622,35 @@ def get_added_magnets_route():
     # Sort by addition time, newest first
     sorted_magnets = sorted(added_magnets, key=lambda x: x.get('added_at', 0), reverse=True)
     return jsonify(sorted_magnets)
+
+@app.route('/open_folder')
+def open_folder():
+    """Open the specified folder in the system file explorer."""
+    path = request.args.get('path')
+    if not path:
+        return jsonify({'success': False, 'error': 'No path provided'}), 400
+    
+    try:
+        # Normalize the path and ensure it exists
+        path = os.path.normpath(path)
+        if not os.path.exists(path):
+            return jsonify({'success': False, 'error': 'Path does not exist'}), 404
+            
+        # Use the appropriate command based on the operating system
+        if os.name == 'nt':  # Windows
+            os.startfile(path)
+        elif os.name == 'posix':  # macOS and Linux
+            if sys.platform == 'darwin':  # macOS
+                subprocess.run(['open', path], check=True)
+            else:  # Linux
+                subprocess.run(['xdg-open', path], check=True)
+        else:
+            return jsonify({'success': False, 'error': 'Unsupported operating system'}), 501
+            
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f'Error opening folder {path}: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     # Ensure local_ip is updated before running, in case get_local_ip() behavior changes

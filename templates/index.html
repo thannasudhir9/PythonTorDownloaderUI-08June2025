@@ -210,18 +210,78 @@
             color: var(--current-limits-text);
             border: 1px solid var(--bs-border-color);
         }
+        /* Style for completed download rows */
+        .torrent-completed {
+            background-color: rgba(40, 167, 69, 0.1) !important; /* Light green background */
+        }
+        .torrent-completed:hover {
+            background-color: rgba(40, 167, 69, 0.2) !important; /* Slightly darker on hover */
+        }
+        
+        /* Initially hide files and peers sections */
+        #torrentFilesDetails {
+            display: none;
+        }
+        
         .settings-saved-toast {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 10px 20px;
-            background-color: var(--settings-saved-bg);
-            color: var(--settings-saved-text);
-            border: 1px solid var(--settings-saved-border);
-            border-radius: 0.25rem;
-            z-index: 1050;
-            display: none; /* Hidden by default */
+            padding: 15px 30px;
+            border-radius: 4px;
+            z-index: 9999;
+            display: none;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 300px;
+            text-align: center;
+            animation: slideInDown 0.3s ease-out;
+            opacity: 0.95;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 0.95;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                transform: translate(-50%, 0);
+                opacity: 0.95;
+            }
+            to {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+        }
+        
+        .toast-success {
+            background-color: #28a745; /* Green */
+            border: 1px solid #218838;
+        }
+        
+        .toast-error {
+            background-color: #dc3545; /* Red */
+            border: 1px solid #c82333;
+        }
+        
+        .toast-warning {
+            background-color: #ffc107; /* Yellow */
+            color: #212529;
+            border: 1px solid #e0a800;
+        }
+        
+        .toast-info {
+            background-color: #17a2b8; /* Blue */
+            border: 1px solid #138496;
         }
         #torrentFilesDetails {
             display: none; /* Hidden by default */
@@ -402,19 +462,27 @@
         <!-- Completed Downloads Section -->
         <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Completed Downloads</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Completed Downloads</h5>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="fetchAndDisplayCompletedTorrents()" title="Refresh list">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-sm table-hover">
-                        <thead>
+                        <thead class="table-light">
                             <tr>
                                 <th>Name</th>
                                 <th>Size</th>
+                                <th>Download Path</th>
                                 <th>Completed On</th>
-                                <!-- Add actions like 'Open Folder' or 'Remove from list' later if needed -->
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="completedTorrentsList">
-                            <!-- Completed torrents will be listed here by JavaScript -->
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">Loading completed downloads...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -668,11 +736,42 @@
                         totalDownloadRate += parseFloat(status.download_rate) || 0;
                         totalUploadRate += parseFloat(status.upload_rate) || 0;
                         const row = document.createElement('tr');
-                        row.style.cursor = 'pointer'; // Indicate row is clickable
-                        row.setAttribute('onclick', `showTorrentDetails('${id}')`);
+                        
+                        // Add completed class if torrent is finished
+                        if (status.progress === 100) {
+                            row.classList.add('torrent-completed');
+                        }
+                        
+                        // Only set click handler if we have a valid ID
+                        const isValidId = id && id !== '0' && id !== 'undefined';
+                        
+                        if (isValidId) {
+                            row.style.cursor = 'pointer'; // Indicate row is clickable
+                            row.dataset.torrentId = id; // Store ID as data attribute
+                            row.addEventListener('click', (e) => {
+                                // Don't trigger if clicking on interactive elements
+                                if (!e.target.matches('button, input, a, select')) {
+                                    // Toggle files section visibility
+                                    const filesSection = document.getElementById('torrentFilesDetails');
+                                    const isCurrentlyVisible = filesSection.style.display === 'block' && 
+                                                             currentDetailsTorrentId === id;
+                                    
+                                    if (isCurrentlyVisible) {
+                                        filesSection.style.display = 'none';
+                                        currentDetailsTorrentId = null;
+                                    } else {
+                                        showTorrentDetails(id);
+                                    }
+                                }
+                            });
+                        } else {
+                            console.warn('Skipping invalid torrent ID:', id);
+                            row.style.opacity = '0.6'; // Visual indication of disabled state
+                        }
+                        
                         row.innerHTML = `
-                            <td><input type="checkbox" class="torrent-checkbox" value="${id}" onclick="event.stopPropagation();"></td>
-                            <td class="torrent-name-cell">${status.name}</td>
+                            <td><input type="checkbox" class="torrent-checkbox" value="${id}" onclick="event.stopPropagation();" ${!isValidId ? 'disabled' : ''}></td>
+                            <td class="torrent-name-cell">${status.name || 'Unknown Torrent'}</td>
                             <td>
                                 <div class="progress">
                                     <div class="progress-bar" role="progressbar" 
@@ -685,15 +784,21 @@
                                 </div>
                             </td>
                             <td>↓${status.download_rate} KB/s<br>↑${status.upload_rate} KB/s</td>
-                            <td>${status.state}</td>
+                            <td>${status.state || 'unknown'}</td>
                             <td>
-                                <button class="btn btn-sm ${status.is_paused ? 'btn-success' : 'btn-warning'}" onclick="controlTorrent('${id}', '${status.is_paused ? 'resume' : 'pause'}')">
+                                <button class="btn btn-sm ${status.is_paused ? 'btn-success' : 'btn-warning'}" 
+                                    onclick="event.stopPropagation(); controlTorrent('${id}', '${status.is_paused ? 'resume' : 'pause'}')"
+                                    ${!isValidId ? 'disabled' : ''}>
                                     ${status.is_paused ? 'Resume' : 'Pause'}
                                 </button>
-                                <button class="btn btn-sm btn-info" onclick="showTorrentDetails('${id}')">
+                                <button class="btn btn-sm btn-info" 
+                                    onclick="event.stopPropagation(); showTorrentDetails('${id}')"
+                                    ${!isValidId ? 'disabled' : ''}>
                                     Files
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="controlTorrent('${id}', 'delete')">
+                                <button class="btn btn-sm btn-danger" 
+                                    onclick="event.stopPropagation(); controlTorrent('${id}', 'delete')"
+                                    ${!isValidId ? 'disabled' : ''}>
                                     Delete
                                 </button>
                             </td>
@@ -722,6 +827,12 @@
 
         // Show torrent details
         function showTorrentDetails(torrentId) {
+            // Skip if torrentId is invalid
+            if (!torrentId || torrentId === '0') {
+                console.warn('Invalid torrent ID:', torrentId);
+                return;
+            }
+            
             const filesSection = document.getElementById('torrentFilesDetails');
             if (currentDetailsTorrentId === torrentId && filesSection.style.display === 'block') {
                 filesSection.style.display = 'none';
@@ -731,28 +842,22 @@
             currentDetailsTorrentId = torrentId; // Set the new current torrent ID
             console.log(`[Frontend] showTorrentDetails: Fetching details for torrentId: ${torrentId}`); // Log the ID
 
-            // Find torrent name for display (assuming torrents array is up-to-date or accessible)
-            const activeTorrentRow = document.getElementById(`torrent-${torrentId}`);
-            const torrentName = activeTorrentRow ? activeTorrentRow.cells[1].textContent : 'Selected Torrent';
-
             fetch(`/torrent_details/${torrentId}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        if (response.status === 404) {
+                            throw new Error('Torrent not found or no longer active');
+                        }
+                        throw new Error('Network response was not ok');
                     }
                     return response.json();
                 })
                 .then(data => {
                     if (data.error) {
-                        alert('Error fetching torrent details: ' + data.error);
-                        document.getElementById('torrentFilesDetails').style.display = 'none';
-                        return;
+                        throw new Error(data.error);
                     }
-
-                    // Populate the new external files and peers display
-                    displayTorrentExtendedDetails(torrentName, data.files, data.peers);
-                    filesSection.style.display = 'block'; // Ensure section is visible
-
+                    filesSection.style.display = 'block';
+                    displayTorrentExtendedDetails(data.name, data.files, data.peers);
                     // Update files list in the modal (optional, could be removed if modal only shows peers)
                     const filesList = document.getElementById('filesList');
                     filesList.innerHTML = data.files.map(file => `
@@ -793,9 +898,18 @@
                 })
                 .catch(error => {
                     console.error('Error in showTorrentDetails:', error);
-                    alert('Failed to fetch or display torrent details: ' + error.message);
-                    document.getElementById('torrentFilesDetails').style.display = 'none';
+                    const errorMessage = error.message.includes('not found') || error.message.includes('no longer active')
+                        ? 'Torrent no longer active. Refreshing list...'
+                        : 'Failed to fetch torrent details: ' + error.message;
+                    
+                    showToast(errorMessage, 'warning');
+                    filesSection.style.display = 'none';
                     currentDetailsTorrentId = null; // Clear on error
+                    
+                    // If the torrent is not found, refresh the torrent list after a short delay
+                    if (error.message.includes('not found') || error.message.includes('no longer active')) {
+                        setTimeout(updateTorrents, 1000);
+                    }
                 });
         }
 
@@ -867,7 +981,7 @@
                     showToast('Settings saved successfully!');
                     fetchAndDisplayCurrentSettings(); // Refresh displayed settings
                 } else {
-                    alert('Failed to save settings: ' + data.error);
+                    showToast('Failed to save settings: ' + data.error, 'error');
                 }
             });
         });
@@ -879,7 +993,7 @@
                 .map(cb => cb.value);
 
             if (selected.length === 0) {
-                alert('Please select at least one torrent');
+                showToast('Please select at least one torrent', 'warning');
                 return;
             }
 
@@ -993,14 +1107,41 @@
         }
 
         let toastTimeout;
-        function showToast(message) {
+        function showToast(message, type = 'info') {
             const toast = document.getElementById('settingsSavedToast');
             toast.textContent = message;
+            
+            // Reset classes and set the appropriate one
+            toast.className = 'settings-saved-toast';
+            
+            // Add class based on message type
+            switch(type) {
+                case 'success':
+                    toast.classList.add('toast-success');
+                    break;
+                case 'error':
+                    toast.classList.add('toast-error');
+                    break;
+                case 'warning':
+                    toast.classList.add('toast-warning');
+                    break;
+                case 'info':
+                default:
+                    toast.classList.add('toast-info');
+            }
+            
+            // Show the toast with animation
             toast.style.display = 'block';
+            
+            // Clear any existing timeout and set new one (5 seconds)
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+                toast.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                    toast.style.animation = '';
+                }, 300);
+            }, 5000);
         }
 
         function fetchAndDisplayCurrentSettings() {
@@ -1165,30 +1306,102 @@
         }
 
         function fetchAndDisplayCompletedTorrents() {
+            const tbody = document.getElementById('completedTorrentsList');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-3">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Loading completed downloads...
+                    </td>
+                </tr>`;
+
             fetch('/get_completed_torrents')
                 .then(response => response.json())
                 .then(data => {
-                    const tbody = document.getElementById('completedTorrentsList');
-                    tbody.innerHTML = ''; // Clear previous entries
+                    tbody.innerHTML = ''; // Clear loading message
+                    
                     if (data && data.length > 0) {
                         data.forEach(torrent => {
                             const row = tbody.insertRow();
-                            row.insertCell().textContent = torrent.name;
-                            row.insertCell().textContent = formatSize(torrent.size);
+                            
+                            // Name column
+                            const nameCell = row.insertCell();
+                            nameCell.textContent = torrent.name || 'Unknown Torrent';
+                            nameCell.style.maxWidth = '250px';
+                            nameCell.style.overflow = 'hidden';
+                            nameCell.style.textOverflow = 'ellipsis';
+                            nameCell.style.whiteSpace = 'nowrap';
+                            nameCell.title = torrent.name || '';
+                            
+                            // Size column
+                            row.insertCell().textContent = formatSize(torrent.size || 0);
+                            
+                            // Download Path column
+                            const pathCell = row.insertCell();
+                            const path = torrent.save_path || 'N/A';
+                            pathCell.textContent = path;
+                            pathCell.style.maxWidth = '300px';
+                            pathCell.style.overflow = 'hidden';
+                            pathCell.style.textOverflow = 'ellipsis';
+                            pathCell.style.whiteSpace = 'nowrap';
+                            pathCell.title = path;
+                            
+                            // Completed On column
+                            const completedCell = row.insertCell();
                             const completedDate = torrent.completed_time ? new Date(torrent.completed_time * 1000).toLocaleString() : 'N/A';
-                            row.insertCell().textContent = completedDate;
+                            completedCell.textContent = completedDate;
+                            completedCell.style.whiteSpace = 'nowrap';
+                            
+                            // Actions column
+                            const actionsCell = row.insertCell();
+                            actionsCell.style.whiteSpace = 'nowrap';
+                            
+                            // Open Folder button
+                            if (torrent.save_path) {
+                                const openBtn = document.createElement('button');
+                                openBtn.className = 'btn btn-sm btn-outline-primary me-1';
+                                openBtn.title = 'Open download folder';
+                                openBtn.innerHTML = '<i class="bi bi-folder2-open"></i>';
+                                openBtn.onclick = (e) => {
+                                    e.stopPropagation();
+                                    // This will be handled by the backend
+                                    fetch(`/open_folder?path=${encodeURIComponent(torrent.save_path)}`)
+                                        .catch(err => console.error('Error opening folder:', err));
+                                };
+                                actionsCell.appendChild(openBtn);
+                            }
+                            
+                            // Copy Path button
+                            const copyBtn = document.createElement('button');
+                            copyBtn.className = 'btn btn-sm btn-outline-secondary';
+                            copyBtn.title = 'Copy path to clipboard';
+                            copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                            copyBtn.onclick = (e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(torrent.save_path || '');
+                                showToast('Path copied to clipboard!', 'success');
+                            };
+                            actionsCell.appendChild(copyBtn);
                         });
                     } else {
                         const row = tbody.insertRow();
                         const cell = row.insertCell();
-                        cell.colSpan = 3;
-                        cell.textContent = 'No torrents completed yet.';
+                        cell.colSpan = 5;
+                        cell.className = 'text-center text-muted py-3';
+                        cell.textContent = 'No completed downloads found.';
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching completed torrents:', error);
-                    const tbody = document.getElementById('completedTorrentsList');
-                    tbody.innerHTML = '<tr><td colspan="3">Error loading completed torrents.</td></tr>';
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-danger py-3">
+                                Error loading completed downloads. 
+                                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="fetchAndDisplayCompletedTorrents()">
+                                    <i class="bi bi-arrow-clockwise"></i> Try Again
+                                </button>
+                            </td>
+                        </tr>`;
                 });
         }
 
@@ -1208,9 +1421,9 @@
             .then(data => {
                 if (data.success) {
                     document.getElementById('magnetLink').value = '';
-                    alert('Torrent added successfully!');
+                    showToast('Torrent added successfully!', 'success');
                 } else {
-                    alert('Failed to add torrent: ' + data.error);
+                    showToast('Failed to add torrent: ' + data.error, 'error');
                 }
             });
         });
@@ -1225,7 +1438,7 @@
                 if (data.success) {
                     updateTorrents();
                 } else {
-                    alert('Failed to ' + action + ' torrent');
+                    showToast('Failed to ' + action + ' torrent', 'error');
                 }
             });
         }
