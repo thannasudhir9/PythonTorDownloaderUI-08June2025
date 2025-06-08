@@ -240,3 +240,84 @@ KeyError: 'unknown name in torrent params: paused'
 2025-06-08 14:48:13,469 - torrentDownloaderUI - DEBUG - Torrent handle is valid: <libtorrent.torrent_handle object at 0x000001AEF3EAEB20>
 2025-06-08 14:48:13,469 - torrentDownloaderUI - INFO - Added new magnet link to history: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
 2025-06-08 14:48:13,469 - torrentDownloaderUI - INFO - Successfully added torrent with handle_id: -7654932622119688102
+2025-06-08 14:48:38,241 - torrentDownloaderUI - INFO - Torrent 'www.5MovieRulz.realty - Devika & Danny (2025) 1080p S01 EP (01-07) TRUE WEB-DL - AVC - [Tel + Tam + Hin + Mal + Kan]' (ID: -7654932622119688102) marked as completed and added to completed list.
+2025-06-08 14:48:46,696 - torrentDownloaderUI - INFO - Attempting to pause all active torrents.
+2025-06-08 14:48:46,697 - torrentDownloaderUI - INFO - Paused torrent:  (ID: -7654932622119688102)
+2025-06-08 14:48:46,698 - torrentDownloaderUI - INFO - Finished attempting to pause all torrents. Paused: 1
+2025-06-08 14:50:59,547 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:56:38,070 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:56:39,319 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:56:39,319 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:56:39,319 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:56:39,335 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:56:41,135 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:56:52,690 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:56:52,691 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:56:52,691 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:56:52,701 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:56:53,036 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:56:55,364 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:56:55,365 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:56:55,365 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:56:55,394 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:56:55,679 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:56:56,722 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:56:56,724 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:56:56,724 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:56:56,728 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:56:56,932 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:58:53,303 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:58:53,306 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:58:53,306 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:58:53,325 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:58:54,056 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 15:00:06,213 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 15:00:33,370 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 15:00:33,373 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 15:00:33,374 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 15:00:33,387 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 15:03:55,317 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 15:03:56,503 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 15:03:56,505 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 15:03:56,505 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 15:03:56,523 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 15:03:57,208 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 101
+2025-06-08 15:03:59,652 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 15:03:59,652 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 15:03:59,653 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 15:03:59,664 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 15:04:00,052 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 101
+2025-06-08 15:04:17,382 - __main__ - INFO - Download path updated to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 15:04:21,403 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 15:04:21,403 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 15:04:21,403 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 15:04:21,417 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 15:04:21,640 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 101
+2025-06-08 15:04:23,842 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 15:04:23,843 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 15:04:23,844 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 15:04:23,858 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 15:04:24,032 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 101
+2025-06-08 15:04:32,017 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 15:04:32,018 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 15:04:32,018 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 15:04:32,018 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 15:04:32,020 - torrentDownloaderUI - DEBUG - Forcing recheck of existing files...
+2025-06-08 15:04:32,021 - torrentDownloaderUI - INFO - Successfully added magnet link, handle: <libtorrent.torrent_handle object at 0x0000020CBC43E880>
+2025-06-08 15:04:32,021 - torrentDownloaderUI - DEBUG - Torrent handle is valid: <libtorrent.torrent_handle object at 0x0000020CBC43E880>
+2025-06-08 15:04:32,021 - torrentDownloaderUI - INFO - Added new magnet link to history: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 15:04:32,021 - torrentDownloaderUI - INFO - Successfully added torrent with handle_id: -5278096558758344037
+2025-06-08 15:04:50,328 - torrentDownloaderUI - INFO - Torrent 'www.5MovieRulz.realty - Devika & Danny (2025) 1080p S01 EP (01-07) TRUE WEB-DL - AVC - [Tel + Tam + Hin + Mal + Kan]' (ID: -5278096558758344037) marked as completed and added to completed list.
+2025-06-08 15:04:53,636 - torrentDownloaderUI - INFO - Attempting to pause all active torrents.
+2025-06-08 15:04:53,637 - torrentDownloaderUI - INFO - Paused torrent:  (ID: -5278096558758344037)
+2025-06-08 15:04:53,638 - torrentDownloaderUI - INFO - Finished attempting to pause all torrents. Paused: 1
+2025-06-08 15:06:14,898 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 15:06:14,898 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 15:06:14,899 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 15:06:14,928 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 15:06:15,274 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 101
+2025-06-08 15:08:18,279 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 15:08:18,280 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 15:08:18,281 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 15:08:18,297 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 15:08:18,702 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 101

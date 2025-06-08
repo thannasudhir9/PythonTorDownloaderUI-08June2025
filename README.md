@@ -175,4 +175,6 @@ Hide Connected Peers and Files Section, only when clicked on current active torr
 # Commands
 taskkill /F /IM python.exe
 
+#VPN - Using UrbanVPN windows application , connected to italy
+
 Date - June 8 2025

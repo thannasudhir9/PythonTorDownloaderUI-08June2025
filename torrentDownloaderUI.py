@@ -28,8 +28,6 @@ import json
 import socket
 import requests
 
-app = Flask(__name__)
-
 # Get local IP address
 def get_local_ip():
     try:
@@ -47,6 +45,11 @@ active_downloads = {}
 completed_torrents_info = [] # Store info of completed torrents (name, size, etc.)
 completed_torrents_ids = set() # To avoid duplicate entries in completed_torrents_info by torrent ID or unique name
 added_magnets = [] # Store previously added magnet links
+
+# Default download directory (can be changed by user)
+DOWNLOAD_DIR = os.path.join(os.path.expanduser('~'), 'Downloads')
+
+# Initialize libtorrent session
 download_session = lt.session()
 download_session.listen_on(6881, 6891)
 # Set default upload speed limit to 100 KB/s
@@ -651,6 +654,50 @@ def open_folder():
     except Exception as e:
         logger.error(f'Error opening folder {path}: {str(e)}')
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/get_download_path', methods=['GET'])
+def get_download_path():
+    """Get the current download path."""
+    global DOWNLOAD_DIR
+    return jsonify({
+        'success': True,
+        'download_path': os.path.abspath(DOWNLOAD_DIR)
+    })
+
+@app.route('/set_download_path', methods=['POST'])
+def set_download_path():
+    """Update the download path."""
+    global DOWNLOAD_DIR
+    
+    new_path = request.json.get('path')
+    if not new_path:
+        return jsonify({'success': False, 'error': 'No path provided'}), 400
+    
+    try:
+        # Normalize and validate the path
+        new_path = os.path.normpath(new_path)
+        if not os.path.exists(new_path):
+            return jsonify({'success': False, 'error': 'Path does not exist'}), 404
+            
+        if not os.access(new_path, os.W_OK):
+            return jsonify({'success': False, 'error': 'No write permission for the specified path'}), 403
+            
+        # Update the download directory
+        DOWNLOAD_DIR = new_path
+        
+        # Create the directory if it doesn't exist
+        os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+        
+        logger.info(f'Download path updated to: {DOWNLOAD_DIR}')
+        return jsonify({
+            'success': True,
+            'message': f'Download path updated to: {DOWNLOAD_DIR}',
+            'download_path': os.path.abspath(DOWNLOAD_DIR)
+        })
+    except Exception as e:
+        error_msg = f'Error setting download path: {str(e)}'
+        logger.error(error_msg, exc_info=True)
+        return jsonify({'success': False, 'error': error_msg}), 500
 
 if __name__ == '__main__':
     # Ensure local_ip is updated before running, in case get_local_ip() behavior changes
