@@ -44,6 +44,7 @@ def get_local_ip():
 active_downloads = {}
 completed_torrents_info = [] # Store info of completed torrents (name, size, etc.)
 completed_torrents_ids = set() # To avoid duplicate entries in completed_torrents_info by torrent ID or unique name
+added_magnets = [] # Store previously added magnet links
 download_session = lt.session()
 download_session.listen_on(6881, 6891)
 # Set default upload speed limit to 100 KB/s
@@ -78,8 +79,10 @@ def download_torrent(magnet_link_or_file_path, save_path="."):
             if magnet_link_or_file_path.startswith("magnet:"):
                 app.logger.debug(f"Adding magnet link: {magnet_link_or_file_path[:60]}...")
                 
-                # Create add_torrent_params
-                params = lt.add_torrent_params()
+
+                
+                # Parse magnet URI and create torrent params
+                params = lt.parse_magnet_uri(magnet_link_or_file_path)
                 params.save_path = save_path
                 params.storage_mode = lt.storage_mode_t.storage_mode_sparse
                 
@@ -87,9 +90,6 @@ def download_torrent(magnet_link_or_file_path, save_path="."):
                 params.flags = lt.torrent_flags.duplicate_is_error
                 params.flags &= ~lt.torrent_flags.paused
                 params.flags &= ~lt.torrent_flags.auto_managed
-                
-                # Parse magnet URI and update params
-                lt.parse_magnet_uri(magnet_link_or_file_path, params)
                 
                 # Add the torrent to the session
                 handle = download_session.add_torrent(params)
@@ -204,14 +204,14 @@ def update_torrent_status():
 
             # Check for completed torrents to add to our completed list
             is_finished_or_seeding = s.state == lt.torrent_status.states.seeding or s.state == lt.torrent_status.states.finished
-            # 'data' here is the dictionary from active_downloads[handle_id]
-            unique_torrent_identifier = data.get('name', handle_id) # Use name if available, else id
+            # 'info' here is the dictionary from active_downloads[handle_id]
+            unique_torrent_identifier = info.get('name', handle_id) # Use name if available, else id
 
             if is_finished_or_seeding and unique_torrent_identifier not in completed_torrents_ids:
                 try:
                     ti = handle.torrent_file()
                     if ti:
-                        torrent_name = ti.name() if ti.name() else data.get('name', 'Unknown') # Use data here as well
+                        torrent_name = ti.name() if ti.name() else info.get('name', 'Unknown') # Use info here instead of data
                         total_size_bytes = ti.total_size()
                         # Ensure not to add if already present by some other check (though completed_torrents_ids should handle this)
                         if not any(c['id'] == handle_id for c in completed_torrents_info):
@@ -253,12 +253,24 @@ def add_torrent():
         
         if handle and handle.is_valid():
             handle_id = str(hash(magnet_link))
+            
+            # Store the magnet link in our list of added magnets if it's not already there
+            if magnet_link not in [m['link'] for m in added_magnets]:
+                added_magnets.append({
+                    'link': magnet_link,
+                    'added_at': time.time(),
+                    'name': "Fetching metadata...",
+                    'handle_id': handle_id
+                })
+                app.logger.info(f"Added new magnet link to history: {magnet_link[:50]}...")
+            
             active_downloads[handle_id] = {
                 'handle': handle,
                 'status': {},  # Will be populated by update_torrent_status
                 'save_path': save_path,
                 'name': "Fetching metadata...",  # Initial placeholder name
-                'added_at': time.time()
+                'added_at': time.time(),
+                'magnet_link': magnet_link
             }
             app.logger.info(f"Successfully added torrent with handle_id: {handle_id}")
             return jsonify({
@@ -274,6 +286,7 @@ def add_torrent():
     except Exception as e:
         error_msg = f"Unexpected error adding torrent: {str(e)}"
         app.logger.error(error_msg, exc_info=True)
+        return jsonify({'success': False, 'error': error_msg}), 500
         return jsonify({'success': False, 'error': error_msg}), 500
 
 @app.route('/get_status')
@@ -600,6 +613,12 @@ def get_completed_torrents_route():
     # Sort by completion time, newest first, if desired
     # sorted_completed = sorted(completed_torrents_info, key=lambda x: x.get('completed_time', 0), reverse=True)
     return jsonify(completed_torrents_info)
+
+@app.route('/get_added_magnets')
+def get_added_magnets_route():
+    # Sort by addition time, newest first
+    sorted_magnets = sorted(added_magnets, key=lambda x: x.get('added_at', 0), reverse=True)
+    return jsonify(sorted_magnets)
 
 if __name__ == '__main__':
     # Ensure local_ip is updated before running, in case get_local_ip() behavior changes

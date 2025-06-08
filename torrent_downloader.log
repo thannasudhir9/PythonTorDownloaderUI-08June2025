@@ -70,3 +70,70 @@ did not match C++ signature:
     parse_magnet_uri(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)
 2025-06-08 14:01:39,829 - torrentDownloaderUI - ERROR - Failed to add torrent. Handle is None
 2025-06-08 14:02:20,396 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:04:07,594 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:04:07,594 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:04:07,594 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:04:07,619 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:04:08,019 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:04:15,390 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:04:15,391 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:04:15,391 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:04:15,392 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 14:04:15,392 - torrentDownloaderUI - ERROR - Error in download_torrent: Python argument types in
+    libtorrent.parse_magnet_uri(str, add_torrent_params)
+did not match C++ signature:
+    parse_magnet_uri(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)
+Traceback (most recent call last):
+  File "d:\VSCode\PythonTorrentDownloader\torrentDownloaderUI.py", line 92, in download_torrent
+    lt.parse_magnet_uri(magnet_link_or_file_path, params)
+Boost.Python.ArgumentError: Python argument types in
+    libtorrent.parse_magnet_uri(str, add_torrent_params)
+did not match C++ signature:
+    parse_magnet_uri(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)
+2025-06-08 14:04:15,392 - torrentDownloaderUI - ERROR - Failed to add torrent. Handle is None
+2025-06-08 14:05:04,316 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:07:41,392 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:08:30,131 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:08:43,792 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:11:09,367 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:11:09,367 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:11:09,367 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:11:09,374 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:11:10,021 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:11:15,999 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:11:16,000 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:11:16,000 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:11:16,000 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 14:11:16,002 - torrentDownloaderUI - DEBUG - Forcing recheck of existing files...
+2025-06-08 14:11:16,003 - torrentDownloaderUI - INFO - Successfully added magnet link, handle: <libtorrent.torrent_handle object at 0x000002B09B6D6810>
+2025-06-08 14:11:16,003 - torrentDownloaderUI - DEBUG - Torrent handle is valid: <libtorrent.torrent_handle object at 0x000002B09B6D6810>
+2025-06-08 14:11:16,005 - torrentDownloaderUI - INFO - Added new magnet link to history: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:11:16,005 - torrentDownloaderUI - INFO - Successfully added torrent with handle_id: -6839792444211556743
+2025-06-08 14:12:19,910 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:13:07,360 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:13:07,656 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:13:07,656 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:13:07,657 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:13:07,679 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:13:08,147 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:13:11,342 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:13:11,342 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:13:11,343 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:13:11,343 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 14:13:11,344 - torrentDownloaderUI - DEBUG - Forcing recheck of existing files...
+2025-06-08 14:13:11,344 - torrentDownloaderUI - INFO - Successfully added magnet link, handle: <libtorrent.torrent_handle object at 0x000002055A366CE0>
+2025-06-08 14:13:11,344 - torrentDownloaderUI - DEBUG - Torrent handle is valid: <libtorrent.torrent_handle object at 0x000002055A366CE0>
+2025-06-08 14:13:11,344 - torrentDownloaderUI - INFO - Added new magnet link to history: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:13:11,344 - torrentDownloaderUI - INFO - Successfully added torrent with handle_id: 8748623081392497140
+2025-06-08 14:13:30,465 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Received request for handle_id: 0
+2025-06-08 14:13:30,465 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Current active_downloads keys: ['8748623081392497140']
+2025-06-08 14:13:30,466 - torrentDownloaderUI - ERROR - [Backend] torrent_details: handle_id '0' not found in active_downloads.
+2025-06-08 14:13:59,460 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Received request for handle_id: 0
+2025-06-08 14:13:59,460 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Current active_downloads keys: ['8748623081392497140']
+2025-06-08 14:13:59,460 - torrentDownloaderUI - ERROR - [Backend] torrent_details: handle_id '0' not found in active_downloads.
+2025-06-08 14:14:14,144 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Received request for handle_id: 0
+2025-06-08 14:14:14,144 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Current active_downloads keys: ['8748623081392497140']
+2025-06-08 14:14:14,144 - torrentDownloaderUI - ERROR - [Backend] torrent_details: handle_id '0' not found in active_downloads.
+2025-06-08 14:14:14,146 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Received request for handle_id: 0
+2025-06-08 14:14:14,146 - torrentDownloaderUI - DEBUG - [Backend] torrent_details: Current active_downloads keys: ['8748623081392497140']
+2025-06-08 14:14:14,146 - torrentDownloaderUI - ERROR - [Backend] torrent_details: handle_id '0' not found in active_downloads.

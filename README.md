@@ -159,5 +159,13 @@ This README provides a comprehensive guide to the Python Torrent Downloader proj
 pip install -r requirements.txt
 
 # Run the application
-python torrentDownloaderUI.py#   P y t h o n T o r D o w n l o a d e r U I - 0 8 J u n e 2 0 2 5  
- 
+python torrentDownloaderUI.py
+
+
+
+add a postgres sql database, create user and store the information of magnet links , metadata , downloaded files etc specific to the user
+
+create an admin user who can monitor number of users and what users have downloaded
+
+
+taskkill /F /IM python.exe
