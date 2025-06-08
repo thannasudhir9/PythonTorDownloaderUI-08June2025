@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torrent Downloader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        :root {
+            /* Base Theme Colors */
+            --blue-accent: #007bff;
+            --blue-accent-hover: #0056b3;
+
+            /* Light Theme */
+            --light-body-bg: #ffffff;
+            --light-body-color: #212529;
+            --light-card-bg: #f8f9fa;
+            --light-border-color: #dee2e6;
+            --light-link-color: var(--blue-accent);
+
+            /* Dark Theme */
+            --dark-body-bg: #212529;
+            --dark-body-color: #f8f9fa;
+            --dark-card-bg: #343a40;
+            --dark-border-color: #495057;
+            --dark-link-color: var(--blue-accent);
+        }
+
+        .torrent-item {
+            margin-bottom: 15px;
+            padding: 15px;
+        }
+
+        [data-bs-theme="light"] {
+            --bs-body-bg: var(--light-body-bg);
+            --bs-body-color: var(--light-body-color);
+            --bs-border-color: var(--light-border-color);
+            --card-bg: var(--light-card-bg);
+            --primary-btn-bg: var(--blue-accent);
+            --primary-btn-border: var(--blue-accent);
+            --primary-btn-hover-bg: var(--blue-accent-hover);
+            --primary-btn-hover-border: var(--blue-accent-hover);
+            --btn-close-filter: none;
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-body-bg: var(--dark-body-bg);
+            --bs-body-color: var(--dark-body-color);
+            --bs-border-color: var(--dark-border-color);
+            --card-bg: var(--dark-card-bg);
+            --primary-btn-bg: var(--blue-accent);
+            --primary-btn-border: var(--blue-accent);
+            --primary-btn-hover-bg: var(--blue-accent-hover);
+            --primary-btn-hover-border: var(--blue-accent-hover);
+            --btn-close-filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        body {
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--bs-border-color);
+        }
+        .btn-primary {
+            background-color: var(--primary-btn-bg);
+            border-color: var(--primary-btn-border);
+            color: #ffffff; /* Ensure text on blue button is white */
+        }
+        .btn-primary:hover {
+            background-color: var(--blue-accent-hover);
+            border-color: var(--blue-accent-hover);
+            color: #ffffff;
+        }
+
+        .btn-success {
+            background-color: #198754; /* Bootstrap green */
+            border-color: #198754;
+            color: #ffffff;
+        }
+        .btn-success:hover {
+            background-color: #157347;
+            border-color: #146c43;
+            color: #ffffff;
+        }
+
+        .btn-warning {
+            background-color: #ffc107; /* Bootstrap yellow */
+            border-color: #ffc107;
+            color: #000000;
+        }
+        .btn-warning:hover {
+            background-color: #ffca2c;
+            border-color: #ffc720;
+            color: #000000;
+        }
+
+        .btn-danger {
+            background-color: #dc3545; /* Bootstrap red */
+            border-color: #dc3545;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            background-color: #bb2d3b;
+            border-color: #b02a37;
+            color: #ffffff;
+        }
+        a, .btn-link {
+            color: var(--link-color);
+        }
+        a:hover, .btn-link:hover {
+            color: #0056b3;
+        }
+        .table {
+            color: var(--bs-body-color);
+        }
+        .table th, .table td, .table thead th {
+            border-color: var(--bs-border-color);
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--bs-border-color);
+        }
+        .modal-header, .modal-footer {
+            border-bottom-color: var(--bs-border-color);
+            border-top-color: var(--bs-border-color);
+        }
+        .form-control, .form-select {
+            background-color: var(--card-bg); /* Changed to card-bg for better contrast */
+            color: var(--bs-body-color);
+            border: 1px solid var(--bs-border-color);
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--card-bg);
+            color: var(--bs-body-color);
+            border-color: var(--blue-accent);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Standard blue focus */
+        }
+        .form-label, .card-title, h1, h5, .modal-title {
+            color: var(--bs-body-color);
+        }
+        .vpn-warning-banner {
+            background-color: #ffc107; /* Bootstrap warning yellow */
+            color: #212529; /* Dark text for readability */
+            padding: 0.75rem 1.25rem;
+            text-align: center;
+            font-weight: 500;
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+        .top-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+        .theme-toggle-btn {
+            font-size: 1.25rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            color: var(--bs-body-color);
+        }
+        .theme-toggle-btn:hover {
+            color: var(--blue-accent);
+        }
+        .progress {
+             background-color: var(--bs-border-color);
+        }
+        .progress-bar {
+            background-color: var(--blue-accent);
+            color: #fff;
+            transition: width 0.1s ease-in-out;
+        }
+
+        #activeTorrentsTableWrapper {
+            max-height: 400px; /* Adjust as needed */
+            overflow-y: auto;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--bs-body-color);
+            background-color: transparent; /* Ensure no default bg */
+            border-bottom-color: var(--bs-border-color);
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--blue-accent);
+            background-color: var(--bs-body-bg);
+            border-color: var(--bs-border-color) var(--bs-border-color) var(--bs-body-bg);
+        }
+        .nav-tabs .nav-link:hover {
+            border-color: var(--blue-accent) var(--blue-accent) var(--bs-border-color);
+        }
+        .btn-close {
+            filter: var(--btn-close-filter);
+        }
+        .chart-container {
+            position: relative;
+            height: 250px; /* Adjust as needed */
+            width: 100%;
+        }
+        .current-settings-display {
+            background-color: var(--current-limits-bg);
+            color: var(--current-limits-text);
+            border: 1px solid var(--bs-border-color);
+        }
+        .settings-saved-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: var(--settings-saved-bg);
+            color: var(--settings-saved-text);
+            border: 1px solid var(--settings-saved-border);
+            border-radius: 0.25rem;
+            z-index: 1050;
+            display: none; /* Hidden by default */
+        }
+        #torrentFilesDetails {
+            display: none; /* Hidden by default */
+            margin-top: 20px;
+        }
+        .torrent-name-cell {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal; /* Ensure wrapping */
+            max-width: 300px; /* Adjust as needed, or use a percentage */
+        }
+    </style>
+</head>
+<body>
+    <div class="vpn-warning-banner">
+        ⚠️ Educational Purposes Only !! Download only when connected to VPN to avoid risk! ⚠️
+    </div>
+    <div class="top-banner">
+        <div>Server IP: <strong id="serverIpAddress">{{ ip_address }}</strong><span id="serverIpPort">:5000</span> <span id="ipLocation"></span> <button id="refreshIpBtn" class="btn btn-sm theme-toggle-btn" title="Refresh IP Info"><i class="bi bi-arrow-clockwise"></i></button></div>
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle theme">
+            <!-- Icon will be set by JavaScript -->
+        </button>
+    </div>
+    <div class="container mt-5">
+        <h1 class="mb-4">Torrent Downloader</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Add New Torrent</h5>
+                <form id="torrentForm" class="mb-3">
+                    <div class="mb-3">
+                        <label for="magnetLink" class="form-label">Magnet Link or .torrent File</label>
+                        <input type="text" class="form-control" id="magnetLink" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Torrent</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Settings</h5>
+                <form id="settingsForm" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="downloadLimit" class="form-label">Download Speed Limit (KB/s)</label>
+                        <select class="form-select" id="downloadLimit">
+                            <option value="0">Unlimited</option>
+                            <option value="25">25 KB/s</option>
+                            <option value="50">50 KB/s</option>
+                            <option value="100">100 KB/s</option>
+                            <option value="500">500 KB/s</option>
+                            <option value="1000">1000 KB/s</option>
+                            <option value="5000">5000 KB/s</option>
+                            <option value="10000">10000 KB/s</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="uploadLimit" class="form-label">Upload Speed Limit (KB/s)</label>
+                        <select class="form-select" id="uploadLimit">
+                            <option value="0">Unlimited</option>
+                            <option value="25">25 KB/s</option>
+                            <option value="50">50 KB/s</option>
+                            <option value="100" selected>100 KB/s</option>
+                            <option value="500">500 KB/s</option>
+                            <option value="1000">1000 KB/s</option>
+                            <option value="5000">5000 KB/s</option>
+                            <option value="10000">10000 KB/s</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="maxDownloads" class="form-label">Max Parallel Downloads</label>
+                        <select class="form-select" id="maxDownloads">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row mb-4" id="graphsSection">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Download Speed</h5>
+                        <div class="chart-container">
+                            <canvas id="downloadSpeedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Upload Speed</h5>
+                        <div class="chart-container">
+                            <canvas id="uploadSpeedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0">Active Torrents</h5>
+                    <div>
+                        <button class="btn btn-success btn-sm me-1" onclick="startAllTorrents()">Start All</button>
+                        <button class="btn btn-warning btn-sm me-1" onclick="pauseAllTorrents()">Pause All</button>
+                        <button class="btn btn-danger btn-sm me-1" onclick="stopAllTorrents()">Stop All</button>
+                        <button class="btn btn-info btn-sm me-1" onclick="setNoUpload()">Don't Upload</button>
+                        <button id="toggleGraphsBtn" class="btn btn-sm btn-outline-secondary ms-2">Toggle Graphs</button>
+                    </div>
+                </div>
+                <div id="currentSettingsDisplay" class="current-settings-display mb-3 p-2 rounded small">
+                    <strong>Current Limits:</strong> 
+                    DL: <span id="currentDlLimit">---</span> KB/s | 
+                    UL: <span id="currentUlLimit">---</span> KB/s | 
+                    Max Parallel: <span id="currentMaxDownloads">---</span>
+                </div>
+                <div class="table-responsive" id="activeTorrentsTableWrapper">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>Name</th>
+                                <th>Progress</th>
+                                <th>Speed</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="torrentsList">
+                            <!-- Torrents will be listed here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-warning" onclick="controlSelected('pause')">Pause Selected</button>
+                    <button class="btn btn-success" onclick="controlSelected('resume')">Resume Selected</button>
+                    <button class="btn btn-danger" onclick="controlSelected('delete')">Delete Selected</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Downloads Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Completed Downloads</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Size</th>
+                                <th>Completed On</th>
+                                <!-- Add actions like 'Open Folder' or 'Remove from list' later if needed -->
+                            </tr>
+                        </thead>
+                        <tbody id="completedTorrentsList">
+                            <!-- Completed torrents will be listed here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Torrent Files Details Section -->
+        <div id="torrentFilesDetails" class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Files for: <span id="selectedTorrentNameForFiles"></span></h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover" id="torrentFilesTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Path</th>
+                                <th>Size</th>
+                                <th>Progress</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- File rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Peers Table -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">Connected Peers</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover" id="torrentPeersTable">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>Client</th>
+                                <th>Down Speed</th>
+                                <th>Up Speed</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Peer rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- End of Torrent Files Details Section -->
+
+        <!-- Torrent Details Modal -->
+        <div class="modal fade" id="torrentDetails" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Torrent Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs" id="detailTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#files">Files</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#peers">Peers</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-3">
+                            <div class="tab-pane fade show active" id="files">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Size</th>
+                                            <th>Progress</th>
+                                            <th>Priority</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="filesList">
+                                        <!-- File rows will be inserted here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="peers">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>IP</th>
+                                            <th>Client</th>
+                                            <th>Download Speed</th>
+                                            <th>Progress</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="peersList">
+                                        <!-- Peer rows will be inserted here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="activeTorrents">
+            <!-- Active torrents will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to handle clipboard paste to magnet link input
+        function autoPasteMagnetLink() {
+            const magnetInput = document.getElementById('magnetLink');
+            if (document.activeElement === magnetInput && navigator.clipboard && typeof navigator.clipboard.readText === 'function') {
+                navigator.clipboard.readText()
+                    .then(text => {
+                        if (typeof text === 'string' && text.startsWith('magnet:?')) {
+                            if (magnetInput.value !== text) {
+                                magnetInput.value = text;
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        // Silently ignore errors (e.g., clipboard empty, permission denied)
+                        // console.warn('Could not auto-paste from clipboard:', err);
+                    });
+            }
+        }
+
+        // Update theme toggle icon based on current theme
+        function updateThemeIcon() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+            const toggleButton = document.getElementById('themeToggleBtn');
+            if (toggleButton) {
+                if (currentTheme === 'dark') {
+                    toggleButton.innerHTML = '<i class="bi bi-sun-fill"></i>';
+                } else {
+                    toggleButton.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+                }
+            }
+        }
+
+        // Function to fetch and display IP details
+        function fetchAndDisplayIpDetails() {
+            const ipAddressEl = document.getElementById('serverIpAddress');
+            const ipLocationEl = document.getElementById('ipLocation');
+            const ipPortEl = document.getElementById('serverIpPort');
+
+            if (!ipAddressEl || !ipLocationEl || !ipPortEl) return;
+
+            ipLocationEl.textContent = ' (loading...)'; // Show loading indicator
+
+            fetch('/get_ip_details')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.ip_address) {
+                        ipAddressEl.textContent = data.ip_address;
+                        ipPortEl.textContent = ':5000'; // Assuming port is static for display
+                    }
+                    if (data.location) {
+                        ipLocationEl.textContent = ` ${data.location}`;
+                    } else {
+                        ipLocationEl.textContent = ' (Location N/A)';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching IP details:', error);
+                    ipLocationEl.textContent = ' (Error fetching location)';
+                    // Optionally, clear the IP or show a placeholder if it also fails
+                    // ipAddressEl.textContent = 'N/A'; 
+                });
+        }
+
+        // Combined theme toggle handler (calls existing toggleTheme)
+        function handleThemeToggle() {
+            toggleTheme(); 
+            updateThemeIcon();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            } else {
+                // Default to light theme if nothing is saved
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+            updateThemeIcon(); // Set initial icon
+
+            const themeToggleButton = document.getElementById('themeToggleBtn');
+            if(themeToggleButton) {
+                themeToggleButton.addEventListener('click', handleThemeToggle);
+            }
+
+            const magnetInput = document.getElementById('magnetLink');
+            if (magnetInput) {
+                magnetInput.addEventListener('focus', autoPasteMagnetLink);
+            }
+
+            fetchAndDisplayIpDetails(); // Fetch IP details on load
+
+            const refreshIpButton = document.getElementById('refreshIpBtn');
+            if(refreshIpButton) {
+                refreshIpButton.addEventListener('click', fetchAndDisplayIpDetails);
+            }
+        });
+
+        // Theme toggle implementation
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Periodic status updates
+        /* Commenting out potentially problematic/redundant function
+        function updateTorrents() {
+            fetch('/get_status')
+                .then(response => response.json())
+                .then(data => {
+                    updateUI(data);
+                    handleAutoResume(data);
+                });
+        }
+        */
+
+        // Update torrents display function
+        function updateTorrents() {
+            fetch('/get_status')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('torrentsList');
+                    tbody.innerHTML = '';
+                    let totalDownloadRate = 0;
+                    let totalUploadRate = 0;
+
+                    for (const [id, status] of Object.entries(data)) {
+                        totalDownloadRate += parseFloat(status.download_rate) || 0;
+                        totalUploadRate += parseFloat(status.upload_rate) || 0;
+                        const row = document.createElement('tr');
+                        row.style.cursor = 'pointer'; // Indicate row is clickable
+                        row.setAttribute('onclick', `showTorrentDetails('${id}')`);
+                        row.innerHTML = `
+                            <td><input type="checkbox" class="torrent-checkbox" value="${id}" onclick="event.stopPropagation();"></td>
+                            <td class="torrent-name-cell">${status.name}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: ${status.progress}%" 
+                                         aria-valuenow="${status.progress}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        ${status.progress}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>↓${status.download_rate} KB/s<br>↑${status.upload_rate} KB/s</td>
+                            <td>${status.state}</td>
+                            <td>
+                                <button class="btn btn-sm ${status.is_paused ? 'btn-success' : 'btn-warning'}" onclick="controlTorrent('${id}', '${status.is_paused ? 'resume' : 'pause'}')">
+                                    ${status.is_paused ? 'Resume' : 'Pause'}
+                                </button>
+                                <button class="btn btn-sm btn-info" onclick="showTorrentDetails('${id}')">
+                                    Files
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="controlTorrent('${id}', 'delete')">
+                                    Delete
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    } // End of for loop
+
+                    // Call updateBulkActionButtons if it's defined and should be called after table update
+                    if (typeof updateBulkActionButtons === 'function') {
+                        updateBulkActionButtons();
+                    }
+
+                    // Update charts with total rates
+                    if (downloadSpeedChart && uploadSpeedChart) {
+                        updateChartData(downloadSpeedChart, totalDownloadRate.toFixed(2));
+                        updateChartData(uploadSpeedChart, totalUploadRate.toFixed(2));
+                    }
+                    fetchAndDisplayCompletedTorrents(); // Fetch and display completed torrents
+                })
+                .catch(error => {
+                    console.error('Error fetching or processing torrent status:', error);
+                    // Optionally, display an error to the user in the UI here
+                });
+        }
+
+        // Show torrent details
+        function showTorrentDetails(torrentId) {
+            const filesSection = document.getElementById('torrentFilesDetails');
+            if (currentDetailsTorrentId === torrentId && filesSection.style.display === 'block') {
+                filesSection.style.display = 'none';
+                currentDetailsTorrentId = null; // Clear since it's now hidden
+                return; // Exit if we just hid the section
+            }
+            currentDetailsTorrentId = torrentId; // Set the new current torrent ID
+            console.log(`[Frontend] showTorrentDetails: Fetching details for torrentId: ${torrentId}`); // Log the ID
+
+            // Find torrent name for display (assuming torrents array is up-to-date or accessible)
+            const activeTorrentRow = document.getElementById(`torrent-${torrentId}`);
+            const torrentName = activeTorrentRow ? activeTorrentRow.cells[1].textContent : 'Selected Torrent';
+
+            fetch(`/torrent_details/${torrentId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        alert('Error fetching torrent details: ' + data.error);
+                        document.getElementById('torrentFilesDetails').style.display = 'none';
+                        return;
+                    }
+
+                    // Populate the new external files and peers display
+                    displayTorrentExtendedDetails(torrentName, data.files, data.peers);
+                    filesSection.style.display = 'block'; // Ensure section is visible
+
+                    // Update files list in the modal (optional, could be removed if modal only shows peers)
+                    const filesList = document.getElementById('filesList');
+                    filesList.innerHTML = data.files.map(file => `
+                        <tr>
+                            <td>${file.path}</td>
+                            <td>${formatSize(file.size)}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: ${file.progress}%">
+                                        ${file.progress}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm" onchange="setFilePriority('${torrentId}', '${file.index}', this.value)">
+                                    <option value="0" ${file.priority === 0 ? 'selected' : ''}>Skip</option>
+                                    <option value="1" ${file.priority === 1 ? 'selected' : ''}>Normal</option>
+                                    <option value="7" ${file.priority === 7 ? 'selected' : ''}>High</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    // Update peers list in the modal
+                    const peersList = document.getElementById('peersList');
+                    peersList.innerHTML = data.peers.map(peer => `
+                        <tr>
+                            <td>${peer.ip}</td>
+                            <td>${peer.client}</td>
+                            <td>${peer.down_speed} KB/s</td>
+                            <td>${peer.up_speed} KB/s</td>
+                            <td>${peer.progress}%</td>
+                        </tr>
+                    `).join('');
+
+                    // Show modal - Commented out to prioritize new files display section
+                    // new bootstrap.Modal(document.getElementById('torrentDetails')).show();
+                })
+                .catch(error => {
+                    console.error('Error in showTorrentDetails:', error);
+                    alert('Failed to fetch or display torrent details: ' + error.message);
+                    document.getElementById('torrentFilesDetails').style.display = 'none';
+                    currentDetailsTorrentId = null; // Clear on error
+                });
+        }
+
+        function displayTorrentExtendedDetails(torrentName, files, peers) {
+            const filesSection = document.getElementById('torrentFilesDetails');
+            const torrentNameSpan = document.getElementById('selectedTorrentNameForFiles');
+            const filesTableBody = document.querySelector('#torrentFilesTable tbody');
+
+            torrentNameSpan.textContent = torrentName;
+            filesTableBody.innerHTML = ''; // Clear previous file entries
+
+            if (files && files.length > 0) {
+                files.forEach(file => {
+                    const row = filesTableBody.insertRow();
+                    row.insertCell().textContent = file.index;
+                    row.insertCell().textContent = file.path;
+                    row.insertCell().textContent = formatSize(file.size);
+                    row.insertCell().textContent = file.progress + '%';
+                    row.insertCell().textContent = file.priority;
+                });
+                filesSection.style.display = 'block';
+            } else {
+                const row = filesTableBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 5;
+                cell.textContent = 'No files found for this torrent or metadata not yet available.';
+                filesSection.style.display = 'block'; // Show section even if no files, to display message
+            }
+
+            // Populate Peers Table
+            const peersTableBody = document.querySelector('#torrentPeersTable tbody');
+            peersTableBody.innerHTML = ''; // Clear previous peer entries
+            if (peers && peers.length > 0) {
+                peers.forEach(peer => {
+                    const row = peersTableBody.insertRow();
+                    row.insertCell().textContent = peer.ip;
+                    row.insertCell().textContent = peer.client.substring(0, 20); // Truncate long client strings
+                    row.insertCell().textContent = peer.down_speed.toFixed(2) + ' KB/s';
+                    row.insertCell().textContent = peer.up_speed.toFixed(2) + ' KB/s';
+                    row.insertCell().textContent = peer.progress.toFixed(2) + '%';
+                });
+            } else {
+                const row = peersTableBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 5;
+                cell.textContent = 'No peers connected or data not available.';
+            }
+        }
+
+        // Handle settings form
+        document.getElementById('settingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const settings = {
+                download_limit: document.getElementById('downloadLimit').value,
+                upload_limit: document.getElementById('uploadLimit').value,
+                max_downloads: document.getElementById('maxDownloads').value
+            };
+
+            fetch('/update_settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Settings saved successfully!');
+                    fetchAndDisplayCurrentSettings(); // Refresh displayed settings
+                } else {
+                    alert('Failed to save settings: ' + data.error);
+                }
+            });
+        });
+
+        // Handle bulk actions
+        function controlSelected(action) {
+            const selected = Array.from(document.getElementsByClassName('torrent-checkbox'))
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+            if (selected.length === 0) {
+                alert('Please select at least one torrent');
+                return;
+            }
+
+            fetch('/control_selected', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    torrents: selected,
+                    action: action
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateTorrents();
+                }
+            });
+        }
+
+        // Utility function for formatting file sizes
+        function formatSize(bytes) {
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            if (bytes === 0) return '0 B';
+            const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+        }
+
+        let downloadSpeedChart, uploadSpeedChart;
+        const chartDataPoints = 30; // Number of data points to show on the chart
+        let currentDetailsTorrentId = null; // To track which torrent's details are shown
+
+        function initCharts() {
+            const commonOptions = {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return value + ' KB/s'; }
+                        }
+                    },
+                    x: {
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                },
+                maintainAspectRatio: false
+            };
+
+            const dlCtx = document.getElementById('downloadSpeedChart').getContext('2d');
+            downloadSpeedChart = new Chart(dlCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(chartDataPoints).fill(''),
+                    datasets: [{
+                        label: 'Download Speed',
+                        data: Array(chartDataPoints).fill(0),
+                        borderColor: 'rgb(25, 135, 84)', /* Bootstrap Green */
+                        tension: 0.1
+                    }]
+                },
+                options: commonOptions
+            });
+
+            const ulCtx = document.getElementById('uploadSpeedChart').getContext('2d');
+            uploadSpeedChart = new Chart(ulCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(chartDataPoints).fill(''),
+                    datasets: [{
+                        label: 'Upload Speed',
+                        data: Array(chartDataPoints).fill(0),
+                        borderColor: 'rgb(220, 53, 69)', /* Bootstrap Red */
+                        tension: 0.1
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+
+        function updateChartData(chart, newDataPoint) {
+            chart.data.labels.shift();
+            chart.data.labels.push('');
+            chart.data.datasets[0].data.shift();
+            chart.data.datasets[0].data.push(newDataPoint);
+            chart.update('quiet');
+        }
+
+        // Update status every second
+        setInterval(updateTorrents, 1000);
+        initCharts(); // Initialize charts after DOM is ready (implicitly via script placement)
+
+        const graphsSection = document.getElementById('graphsSection');
+        const toggleGraphsBtn = document.getElementById('toggleGraphsBtn');
+        
+        // Load saved graph visibility state
+        const savedGraphState = localStorage.getItem('graphsVisible');
+        if (savedGraphState === 'false') {
+            graphsSection.style.display = 'none';
+        }
+
+        if(toggleGraphsBtn) {
+            toggleGraphsBtn.addEventListener('click', () => {
+                const isHidden = graphsSection.style.display === 'none';
+                graphsSection.style.display = isHidden ? 'flex' : 'none'; // 'flex' because it's a Bootstrap row
+                localStorage.setItem('graphsVisible', isHidden ? 'true' : 'false');
+            });
+        }
+
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('settingsSavedToast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function fetchAndDisplayCurrentSettings() {
+            fetch('/get_current_settings')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('currentDlLimit').textContent = data.download_limit > 0 ? data.download_limit : 'Unlimited';
+                    document.getElementById('currentUlLimit').textContent = data.upload_limit > 0 ? data.upload_limit : 'Unlimited';
+                    document.getElementById('currentMaxDownloads').textContent = data.max_downloads;
+                    
+                    // Also update the select elements to reflect current settings
+                    document.getElementById('downloadLimit').value = data.download_limit;
+                    document.getElementById('uploadLimit').value = data.upload_limit;
+                    document.getElementById('maxDownloads').value = data.max_downloads;
+                })
+                .catch(error => console.error('Error fetching current settings:', error));
+        }
+
+        // Initial fetch of current settings
+        fetchAndDisplayCurrentSettings();
+
+        function setNoUpload() {
+            fetch('/set_no_upload', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message || 'Upload speed limit set to 0 KB/s.');
+                    fetchAndDisplayCurrentSettings(); // Refresh current settings display
+                    // Also update the select dropdown to reflect 0 if it's part of settings
+                    const uploadLimitSelect = document.getElementById('uploadSpeedLimit');
+                    if (uploadLimitSelect) {
+                        uploadLimitSelect.value = '0'; 
+                    }
+                } else {
+                    showToast('Error: ' + (data.error || 'Could not set no upload limit.'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error setting no upload:', error);
+                showToast('Error setting no upload limit. Check console.', 'error');
+            });
+        }
+
+        function startAllTorrents() {
+            fetch('/start_all_torrents', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    showToast(data.message || 'Attempted to start all torrents.');
+                    updateTorrents(); // Refresh the torrent list
+                })
+                .catch(error => {
+                    console.error('Error starting all torrents:', error);
+                    showToast('Error starting all torrents.');
+                });
+        }
+
+        function stopAllTorrents() {
+            if (!confirm('Are you sure you want to stop and remove all torrents? This will clear the active list.')) {
+                return;
+            }
+            fetch('/stop_all_torrents', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message || 'All torrents stopped and removed.');
+                        updateTorrents(); // Refresh the list (should be empty or show errors if any)
+                        document.getElementById('torrentFilesDetails').style.display = 'none'; // Hide details pane
+                        currentDetailsTorrentId = null;
+                    } else {
+                        showToast('Error: ' + (data.error || 'Could not stop all torrents.'), 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error stopping all torrents:', error);
+                    showToast('Error stopping all torrents. Check console.', 'error');
+                });
+        }
+
+        function pauseAllTorrents() {
+            fetch('/pause_all_torrents', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    showToast(data.message || 'Attempted to pause all torrents.');
+                    updateTorrents(); // Refresh the torrent list
+                })
+                .catch(error => {
+                    console.error('Error pausing all torrents:', error);
+                    showToast('Error pausing all torrents.');
+                });
+        }
+
+        function fetchAndDisplayCompletedTorrents() {
+            fetch('/get_completed_torrents')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('completedTorrentsList');
+                    tbody.innerHTML = ''; // Clear previous entries
+                    if (data && data.length > 0) {
+                        data.forEach(torrent => {
+                            const row = tbody.insertRow();
+                            row.insertCell().textContent = torrent.name;
+                            row.insertCell().textContent = formatSize(torrent.size);
+                            const completedDate = torrent.completed_time ? new Date(torrent.completed_time * 1000).toLocaleString() : 'N/A';
+                            row.insertCell().textContent = completedDate;
+                        });
+                    } else {
+                        const row = tbody.insertRow();
+                        const cell = row.insertCell();
+                        cell.colSpan = 3;
+                        cell.textContent = 'No torrents completed yet.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching completed torrents:', error);
+                    const tbody = document.getElementById('completedTorrentsList');
+                    tbody.innerHTML = '<tr><td colspan="3">Error loading completed torrents.</td></tr>';
+                });
+        }
+
+        // Handle form submission
+        document.getElementById('torrentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const magnetLink = document.getElementById('magnetLink').value;
+            
+            const formData = new FormData();
+            formData.append('magnet_link', magnetLink);
+            
+            fetch('/add_torrent', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('magnetLink').value = '';
+                    alert('Torrent added successfully!');
+                } else {
+                    alert('Failed to add torrent: ' + data.error);
+                }
+            });
+        });
+
+        // Add control function
+        function controlTorrent(torrentId, action) {
+            fetch(`/control_torrent/${torrentId}/${action}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateTorrents();
+                } else {
+                    alert('Failed to ' + action + ' torrent');
+                }
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <div id="settingsSavedToast" class="settings-saved-toast">Settings saved successfully!</div>
+</body>
+</html>

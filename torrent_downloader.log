@@ -1,0 +1,72 @@
+2025-06-06 22:06:04,491 - werkzeug - WARNING -  * Debugger is active!
+2025-06-06 22:06:28,540 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-06 22:06:28,779 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 102
+2025-06-06 22:06:29,402 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-06 22:06:29,723 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 102
+2025-06-06 22:06:40,753 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-06 22:06:40,753 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:03c0dba755b6f46c0412e9b10c4e12...
+2025-06-06 22:06:40,753 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-06 22:06:40,753 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:03c0dba755b6f46c0412e9b10c4e1250326d5926...
+2025-06-06 22:06:40,753 - torrentDownloaderUI - ERROR - Error in download_torrent: 'unknown name in torrent params: paused'
+Traceback (most recent call last):
+  File "d:\VSCode\BoltReferalAutomation\PythonTorrentDownloader\torrentDownloaderUI.py", line 99, in download_torrent
+    handle = lt.add_magnet_uri(download_session, magnet_link_or_file_path, params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'unknown name in torrent params: paused'
+2025-06-06 22:06:40,753 - torrentDownloaderUI - ERROR - Failed to add torrent. Handle is None
+2025-06-06 22:07:58,322 - werkzeug - WARNING -  * Debugger is active!
+2025-06-06 22:08:15,673 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-06 22:08:16,062 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 102
+2025-06-06 22:08:16,543 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-06 22:08:17,053 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 102
+2025-06-06 22:08:20,848 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-06 22:08:20,849 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:03c0dba755b6f46c0412e9b10c4e12...
+2025-06-06 22:08:20,849 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-06 22:08:20,849 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:03c0dba755b6f46c0412e9b10c4e1250326d5926...
+2025-06-06 22:08:20,851 - torrentDownloaderUI - ERROR - Error in download_torrent: Python argument types in
+    libtorrent.parse_magnet_uri(str, add_torrent_params)
+did not match C++ signature:
+    parse_magnet_uri(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)
+Traceback (most recent call last):
+  File "d:\VSCode\BoltReferalAutomation\PythonTorrentDownloader\torrentDownloaderUI.py", line 93, in download_torrent
+    params = lt.parse_magnet_uri(magnet_link_or_file_path, params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Boost.Python.ArgumentError: Python argument types in
+    libtorrent.parse_magnet_uri(str, add_torrent_params)
+did not match C++ signature:
+    parse_magnet_uri(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)
+2025-06-06 22:08:20,851 - torrentDownloaderUI - ERROR - Failed to add torrent. Handle is None
+2025-06-08 13:58:13,676 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 13:58:21,172 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 13:58:21,262 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 112
+2025-06-08 13:58:46,218 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 13:59:04,133 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 13:59:04,670 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 13:59:05,496 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 13:59:05,725 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 13:59:18,360 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 13:59:18,689 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:00:13,566 - werkzeug - WARNING -  * Debugger is active!
+2025-06-08 14:01:12,787 - torrentDownloaderUI - DEBUG - Current download_rate_limit from session: 0 bytes/s
+2025-06-08 14:01:12,787 - torrentDownloaderUI - DEBUG - Current upload_rate_limit from session: 0 bytes/s
+2025-06-08 14:01:12,787 - torrentDownloaderUI - DEBUG - Current active_downloads_limit from session: 20
+2025-06-08 14:01:12,805 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): ip-api.com:80
+2025-06-08 14:01:13,507 - urllib3.connectionpool - DEBUG - http://ip-api.com:80 "GET /json?fields=status,message,query,country,regionName,city HTTP/1.1" 200 103
+2025-06-08 14:01:39,824 - torrentDownloaderUI - DEBUG - Save path set to: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:01:39,825 - torrentDownloaderUI - DEBUG - Attempting to add torrent: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf979...
+2025-06-08 14:01:39,825 - torrentDownloaderUI - DEBUG - Save directory created/verified: C:\Users\STK911\Downloads\PythonTorrentDownloader
+2025-06-08 14:01:39,825 - torrentDownloaderUI - DEBUG - Adding magnet link: magnet:?xt=urn:btih:784c6196f7871af3418d29a6faf9790eabe35a74...
+2025-06-08 14:01:39,828 - torrentDownloaderUI - ERROR - Error in download_torrent: Python argument types in
+    libtorrent.parse_magnet_uri(str, add_torrent_params)
+did not match C++ signature:
+    parse_magnet_uri(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)
+Traceback (most recent call last):
+  File "d:\VSCode\PythonTorrentDownloader\torrentDownloaderUI.py", line 93, in download_torrent
+    params = lt.parse_magnet_uri(magnet_link_or_file_path, params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Boost.Python.ArgumentError: Python argument types in
+    libtorrent.parse_magnet_uri(str, add_torrent_params)
+did not match C++ signature:
+    parse_magnet_uri(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)
+2025-06-08 14:01:39,829 - torrentDownloaderUI - ERROR - Failed to add torrent. Handle is None
+2025-06-08 14:02:20,396 - werkzeug - WARNING -  * Debugger is active!

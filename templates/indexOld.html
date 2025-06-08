@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torrent Downloader UI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .btn {
+            @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm;
+            @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+            @apply transition ease-in-out duration-150;
+        }
+        .btn-primary {
+            @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+        }
+        .btn-secondary {
+            @apply bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500;
+        }
+        .btn-danger {
+            @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+        }
+        .btn-icon {
+            @apply p-2 rounded-md hover:bg-gray-100;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 0.5rem;
+            background-color: #22c55e; /* green-500 */
+            border-radius: 0.25rem;
+            transition: width 0.3s ease-in-out;
+        }
+        input[type="text"], input[type="number"] {
+            @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
+            padding: 0.625rem 0.75rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <div class="container py-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Torrent Downloader UI</h1>
+
+        <!-- Add Torrent Section -->
+        <div class="card">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Add New Torrent</h2>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" id="magnetLinkInput" placeholder="Enter Magnet Link" class="flex-grow">
+                <button id="addTorrentBtn" class="btn btn-primary whitespace-nowrap">
+                    <i class="fas fa-plus mr-2"></i> Add Torrent
+                </button>
+            </div>
+            <p id="addTorrentMessage" class="text-sm mt-2"></p>
+        </div>
+
+        <!-- Global Speed Limits Section -->
+        <div class="card">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Global Speed Limits (KB/s)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="downloadLimit" class="block text-sm font-medium text-gray-700 mb-1">Download Limit</label>
+                    <input type="number" id="downloadLimit" value="0" min="0" placeholder="0 = unlimited">
+                </div>
+                <div>
+                    <label for="uploadLimit" class="block text-sm font-medium text-gray-700 mb-1">Upload Limit</label>
+                    <input type="number" id="uploadLimit" value="0" min="0" placeholder="0 = unlimited">
+                </div>
+            </div>
+            <button id="applyLimitsBtn" class="btn btn-primary mt-4">
+                <i class="fas fa-cog mr-2"></i> Apply Global Limits
+            </button>
+            <p id="limitsMessage" class="text-sm mt-2"></p>
+        </div>
+
+        <!-- Active Downloads Section -->
+        <div class="card">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Active Downloads</h2>
+            <div class="overflow-x-auto">
+                <table id="torrentTable">
+                    <thead>
+                        <tr>
+                            <th>Torrent Name</th>
+                            <th>Progress</th>
+                            <th>DL Speed</th>
+                            <th>UP Speed</th>
+                            <th>Peers</th>
+                            <th>State</th>
+                            <th>ETA</th>
+                            <th>Size</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="torrentTableBody">
+                        <tr>
+                            <td colspan="9" class="text-center text-gray-500 py-4">No active torrents. Add one above!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <body>
+        <div class="container py-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Torrent Downloader UI</h1>
+            <p id="generalMessage" class="text-sm mt-2 text-red-600 text-center"></p>
+            </div>
+    </body>
+
+    <script>
+        const magnetLinkInput = document.getElementById('magnetLinkInput');
+        const addTorrentBtn = document.getElementById('addTorrentBtn');
+        const addTorrentMessage = document.getElementById('addTorrentMessage');
+        const torrentTableBody = document.getElementById('torrentTableBody');
+        const downloadLimitInput = document.getElementById('downloadLimit');
+        const uploadLimitInput = document.getElementById('uploadLimit');
+        const applyLimitsBtn = document.getElementById('applyLimitsBtn');
+        const limitsMessage = document.getElementById('limitsMessage');
+
+        // --- Functions to interact with Backend ---
+
+       
+        async function addTorrent(magnetLink) {
+            try {
+                const response = await fetch('/add_torrent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ magnet_link: magnetLink })
+                });
+                const result = await response.json();
+                displayMessage(addTorrentMessage, result.message, result.status === 'success' ? 'text-green-600' : 'text-red-600');
+                if (result.status === 'success') {
+                    magnetLinkInput.value = ''; // Clear input on success
+                }
+            } catch (error) {
+                console.error('Error adding torrent:', error);
+                displayMessage(addTorrentMessage, 'Failed to add torrent.', 'text-red-600');
+            }
+        }
+
+        async function toggleTorrentState(infoHash, action) {
+            try {
+                const response = await fetch(`/${action}_torrent`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ info_hash: infoHash })
+                });
+                const result = await response.json();
+                console.log(result.message);
+                // Status will be updated by the periodic fetchTorrentStatus
+            } catch (error) {
+                console.error(`Error ${action}ing torrent:`, error);
+            }
+        }
+
+        async function removeTorrent(infoHash) {
+            if (confirm("Are you sure you want to remove this torrent?")) { // Use confirm for simplicity, consider a custom modal for production
+                try {
+                    const response = await fetch('/remove_torrent', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ info_hash: infoHash })
+                    });
+                    const result = await response.json();
+                    console.log(result.message);
+                    // Status will be updated by the periodic fetchTorrentStatus
+                } catch (error) {
+                    console.error('Error removing torrent:', error);
+                }
+            }
+        }
+
+        async function setGlobalSpeedLimits(downloadLimitKb, uploadLimitKb) {
+            try {
+                const response = await fetch('/set_speed_limits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        download_limit_kb: downloadLimitKb,
+                        upload_limit_kb: uploadLimitKb
+                    })
+                });
+                const result = await response.json();
+                displayMessage(limitsMessage, result.message, result.status === 'success' ? 'text-green-600' : 'text-red-600');
+            } catch (error) {
+                console.error('Error setting speed limits:', error);
+                displayMessage(limitsMessage, 'Failed to set speed limits.', 'text-red-600');
+            }
+        }
+
+        // --- UI Update Functions ---
+
+        function updateTorrentTable(torrents) {
+            torrentTableBody.innerHTML = ''; // Clear existing rows
+
+            if (torrents.length === 0) {
+                torrentTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="text-center text-gray-500 py-4">No active torrents. Add one above!</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            torrents.forEach(torrent => {
+                const row = torrentTableBody.insertRow();
+                row.setAttribute('data-info-hash', torrent.info_hash); // Store info_hash on the row
+
+                // Torrent Name
+                const nameCell = row.insertCell();
+                nameCell.textContent = torrent.name;
+
+                // Progress Bar
+                const progressCell = row.insertCell();
+                const progressBarContainer = document.createElement('div');
+                progressBarContainer.className = 'progress-bar-container';
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+                progressBar.style.width = `${torrent.progress}%`;
+                progressBarContainer.appendChild(progressBar);
+                const progressText = document.createElement('span');
+                progressText.className = 'text-xs ml-2';
+                progressText.textContent = `${torrent.progress.toFixed(2)}%`;
+                progressCell.appendChild(progressBarContainer);
+                progressCell.appendChild(progressText);
+
+                // DL Speed
+                const dlSpeedCell = row.insertCell();
+                dlSpeedCell.textContent = `${torrent.download_rate.toFixed(2)} KB/s`;
+
+                // UP Speed
+                const upSpeedCell = row.insertCell();
+                upSpeedCell.textContent = `${torrent.upload_rate.toFixed(2)} KB/s`;
+
+                // Peers
+                const peersCell = row.insertCell();
+                peersCell.textContent = torrent.num_peers;
+
+                // State
+                const stateCell = row.insertCell();
+                stateCell.textContent = torrent.state;
+
+                // ETA
+                const etaCell = row.insertCell();
+                etaCell.textContent = torrent.eta;
+
+                // Size
+                const sizeCell = row.insertCell();
+                if (torrent.total_size > 0) {
+                    sizeCell.textContent = `${torrent.total_downloaded.toFixed(2)} / ${torrent.total_size.toFixed(2)} MB`;
+                } else {
+                    sizeCell.textContent = 'N/A';
+                }
+
+
+                // Actions
+                const actionsCell = row.insertCell();
+                actionsCell.className = 'flex gap-2';
+
+                // Pause/Resume Button
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'btn btn-secondary btn-icon';
+                toggleBtn.innerHTML = torrent.state === 'downloading' || torrent.state === 'downloading metadata' || torrent.state === 'checking' || torrent.state === 'seeding' ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+                toggleBtn.title = torrent.state === 'downloading' || torrent.state === 'downloading metadata' || torrent.state === 'checking' || torrent.state === 'seeding' ? 'Pause' : 'Resume';
+                toggleBtn.onclick = () => toggleTorrentState(torrent.info_hash, torrent.state === 'downloading' || torrent.state === 'downloading metadata' || torrent.state === 'checking' || torrent.state === 'seeding' ? 'pause' : 'resume');
+                actionsCell.appendChild(toggleBtn);
+
+                // Remove Button
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn btn-danger btn-icon';
+                removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                removeBtn.title = 'Remove';
+                removeBtn.onclick = () => removeTorrent(torrent.info_hash);
+                actionsCell.appendChild(removeBtn);
+            });
+        }
+
+        function displayMessage(element, message, className) {
+            element.textContent = message;
+            element.className = `text-sm mt-2 ${className}`;
+            setTimeout(() => {
+                element.textContent = '';
+                element.className = 'text-sm mt-2';
+            }, 5000); // Clear message after 5 seconds
+        }
+
+        // --- Event Listeners ---
+
+        addTorrentBtn.addEventListener('click', () => {
+            const magnetLink = magnetLinkInput.value.trim();
+            if (magnetLink) {
+                addTorrent(magnetLink);
+            } else {
+                displayMessage(addTorrentMessage, 'Please enter a magnet link.', 'text-red-600');
+            }
+        });
+
+        applyLimitsBtn.addEventListener('click', () => {
+            const dlLimit = parseInt(downloadLimitInput.value, 10);
+            const ulLimit = parseInt(uploadLimitInput.value, 10);
+            setGlobalSpeedLimits(dlLimit, ulLimit);
+        });
+
+        // --- Initial Load and Polling ---
+        fetchTorrentStatus(); // Fetch status on page load
+        setInterval(fetchTorrentStatus, 3000); // Fetch status every 3 seconds
+
+        async function fetchTorrentStatus() {
+            try {
+                const response = await fetch('/status');
+                if (!response.ok) { // Check for HTTP errors
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const torrents = await response.json();
+                updateTorrentTable(torrents);
+                // Clear any previous general error message if status fetch succeeds
+                displayMessage(document.getElementById('generalMessage'), '', '');
+            } catch (error) {
+                console.error('Error fetching torrent status:', error);
+                displayMessage(document.getElementById('generalMessage'), 'Failed to connect to the server or fetch torrent status. Please ensure the backend is running.', 'text-red-600');
+            }
+        }
+    </script>
