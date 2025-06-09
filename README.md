@@ -1,24 +1,316 @@
-# Python Torrent Downloader - Project Documentation
+# Torrent Downloader Web UI
 
-**Last Updated:** June 6, 2025
+**Last Updated:** June 9, 2025  
+**Version:** 2.1.0
 
-## Project Overview
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Flask](https://img.shields.io/badge/Flask-2.0+-blue.svg)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.1+-blueviolet.svg)
 
-This project is a web-based torrent downloader application built with Python, utilizing Flask for the web framework and `python-libtorrent` for the torrenting engine. It features a dynamic web interface for managing torrent downloads, with real-time status updates, and various user-friendly enhancements.
+A modern, responsive web-based torrent downloader with a clean user interface, built with Python, Flask, and libtorrent. Features include real-time download monitoring, speed control, and support for both magnet links and .torrent files.
 
-## Project Structure
+## 📚 Project Documentation
+
+- [Product Requirements Document (PRD)](PRD.md) - Project scope and requirements
+- [User Stories & Tasks](USER_STORIES_AND_TASKS.md) - Development tracking
+- [Bug Tracker](BUGS.md) - Known issues and resolutions
+- [Developer Guide](PROMPTS_AND_SOLUTIONS.md) - Common solutions and patterns
+
+## ✨ Features
+
+- 🎨 **Modern UI** with light/dark theme support
+- 📱 **Fully responsive** design that works on all devices
+- ⚡ **Real-time** download/upload speed monitoring
+- 📊 **Interactive charts** for speed visualization
+- 🔄 **Background processing** for uninterrupted downloads
+- 🔒 **CSRF protection** for secure form submissions
+- 🌐 **IP information** with geolocation
+- ⚙️ **Customizable settings** for download/upload limits
+- 📂 **File selection** for selective downloading
+- 🔍 **Search and sort** functionality for downloads
+- 📱 **Mobile-friendly** interface with touch support
+
+## 🚀 Installation
+
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package manager)
+- libtorrent-rasterbar (Python bindings)
+
+### Setup Instructions
+
+1. **Install System Dependencies**
+   ```bash
+   # For Ubuntu/Debian
+   sudo apt-get update
+   sudo apt-get install -y python3-pip python3-dev libboost-python-dev libssl-dev
+   
+   # Install libtorrent
+   sudo apt-get install -y python3-libtorrent
+   
+   # For Windows, use pre-built binaries:
+   # pip install python-libtorrent
+   ```
+
+2. **Install Python Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configuration**
+   Copy `.env.example` to `.env` and modify the settings as needed:
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Run the Application**
+   ```bash
+   python torrentDownloaderUI.py
+   ```
+   The web interface will be available at `http://localhost:5000`
+
+## 🏗️ Project Structure
 
 ```
 PythonTorrentDownloader/
-├── templates/
-│   └── index.html       # Main HTML file for the web UI
-├── torrentDownloaderUI.py # Flask application, backend logic, API endpoints
-├── torrentDownloaderCLI.py # Command-line interface (separate functionality)
-├── README.md              # This documentation file
-└── requirements.txt       # Python package dependencies
+├── templates/              # HTML templates
+│   ├── base.html          # Base template with common layout
+│   └── index.html         # Main application interface
+├── static/                # Static files
+│   ├── css/               # Custom styles
+│   ├── js/                # JavaScript files
+│   └── img/               # Images and icons
+├── torrentDownloaderUI.py  # Main Flask application
+├── torrentDownloaderCLI.py # Command-line interface
+├── config.py             # Configuration settings
+├── requirements.txt      # Python dependencies
+└── README.md            # Documentation
 ```
 
-## Architecture and Design
+## 🛠️ Configuration
+
+Edit the `.env` file to customize the application settings:
+
+```ini
+# Application Settings
+FLASK_ENV=development
+SECRET_KEY=your-secret-key
+
+# Torrent Settings
+SAVE_PATH=./downloads
+MAX_DOWNLOAD_SPEED=0        # 0 = unlimited (KB/s)
+MAX_UPLOAD_SPEED=100       # 100 KB/s
+MAX_ACTIVE_DOWNLOADS=5
+MAX_ACTIVE_SEEDS=5
+
+# Web UI Settings
+DARK_MODE=false
+REFRESH_INTERVAL=2000      # ms
+THEME_COLOR=#4361ee
+```
+
+## 🖥️ Usage
+
+### Adding Torrents
+1. **Using Magnet Links**
+   - Click the "Add Torrent" button
+   - Paste the magnet link in the input field
+   - Click "Download" to start
+
+2. **Using .torrent Files**
+   - Click "Choose File" in the Add Torrent section
+   - Select your .torrent file
+   - Click "Upload" to start downloading
+
+### Managing Downloads
+- **Pause/Resume**: Click the pause/resume button next to each torrent
+- **Remove**: Click the delete button to remove a torrent (with data)
+- **Priority**: Set file priority before starting the download
+- **Speed Limits**: Adjust download/upload speeds in Settings
+
+### Viewing Stats
+- Real-time download/upload speeds
+- Progress bars for each torrent
+- Detailed file information
+- Peer and seed information
+
+## 🌐 API Documentation
+
+### Authentication
+All API endpoints require a valid session token. Include it in the headers:
+```
+X-CSRFToken: your-csrf-token
+```
+
+### Endpoints
+
+#### List All Torrents
+```
+GET /api/torrents
+```
+**Response**
+```json
+{
+  "torrents": [
+    {
+      "id": "abc123",
+      "name": "Ubuntu 22.04",
+      "progress": 75.5,
+      "status": "downloading",
+      "download_rate": 2.5,
+      "upload_rate": 0.5,
+      "size": 4500,
+      "downloaded": 3400,
+      "peers": 12,
+      "seeds": 45
+    }
+  ]
+}
+```
+
+#### Add New Torrent
+```
+POST /api/torrents
+```
+**Body**
+```json
+{
+  "magnet": "magnet:?xt=urn:btih:...",
+  "save_path": "/downloads",
+  "paused": false
+}
+```
+
+#### Get Torrent Details
+```
+GET /api/torrents/{torrent_id}
+```
+
+#### Pause/Resume Torrent
+```
+POST /api/torrents/{torrent_id}/pause
+POST /api/torrents/{torrent_id}/resume
+```
+
+#### Delete Torrent
+```
+DELETE /api/torrents/{torrent_id}
+```
+
+## 🚀 Deployment
+
+### Production Deployment with Gunicorn
+
+1. **Install Gunicorn**
+   ```bash
+   pip install gunicorn
+   ```
+
+2. **Run with Gunicorn**
+   ```bash
+   gunicorn -w 4 -b 0.0.0.0:8000 torrentDownloaderUI:app
+   ```
+   This will start the server on port 8000 with 4 worker processes.
+
+### Docker Deployment
+
+1. **Build the Docker image**
+   ```bash
+   docker build -t torrent-downloader .
+   ```
+
+2. **Run the container**
+   ```bash
+   docker run -d -p 8000:8000 \
+     -v $(pwd)/downloads:/app/downloads \
+     -v $(pwd)/.env:/app/.env \
+     --name torrent-downloader \
+     torrent-downloader
+   ```
+
+### Systemd Service (Linux)
+
+Create a systemd service file at `/etc/systemd/system/torrent-downloader.service`:
+
+```ini
+[Unit]
+Description=Torrent Downloader Web UI
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/torrent-downloader
+Environment="PATH=/path/to/venv/bin"
+ExecStart=/path/to/venv/bin/gunicorn -w 4 -b 0.0.0.0:8000 torrentDownloaderUI:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then enable and start the service:
+```bash
+sudo systemctl enable torrent-downloader
+sudo systemctl start torrent-downloader
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Libtorrent not found**
+   ```
+   ImportError: No module named libtorrent
+   ```
+   **Solution**: Install libtorrent for your platform:
+   - Ubuntu: `sudo apt-get install python3-libtorrent`
+   - Windows: `pip install python-libtorrent`
+   - macOS: `brew install libtorrent-rasterbar`
+
+2. **Permission Denied**
+   ```
+   PermissionError: [Errno 13] Permission denied: '/downloads'
+   ```
+   **Solution**: Ensure the download directory exists and is writable:
+   ```bash
+   sudo mkdir -p /downloads
+   sudo chown -R $USER:$USER /downloads
+   ```
+
+3. **Port Already in Use**
+   ```
+   OSError: [Errno 98] Address already in use
+   ```
+   **Solution**: Either stop the process using the port or change the port in the configuration.
+
+4. **Slow Download Speeds**
+   - Check your internet connection
+   - Increase the number of connections in settings
+   - Try different trackers
+   - Ensure your firewall isn't blocking connections
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Flask](https://flask.palletsprojects.com/)
+- Torrent handling with [libtorrent](https://www.libtorrent.org/)
+- Frontend powered by [Bootstrap 5](https://getbootstrap.com/)
+- Icons from [Bootstrap Icons](https://icons.getbootstrap.com/)
+
+## 🏗️ Architecture and Design
 
 ### Backend (`torrentDownloaderUI.py`)
 
